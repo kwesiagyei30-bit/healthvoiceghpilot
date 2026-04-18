@@ -1,0 +1,7 @@
+const CACHE='hvgh-v2';
+const ASSETS=['/','/index.html'];
+self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting()));});
+self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;if(!e.request.url.startsWith('http'))return;if(e.request.url.includes('fonts.googleapis.com')||e.request.url.includes('fonts.gstatic.com')||e.request.url.includes('firebasejs')){e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));return r;}).catch(()=>caches.match(e.request)));return;}e.respondWith(caches.match(e.request).then(cached=>{if(cached)return cached;return fetch(e.request).then(r=>{if(r&&r.status===200&&r.type==='basic'){const c=r.clone();caches.open(CACHE).then(cache=>cache.put(e.request,c));}return r;}).catch(()=>{if(e.request.mode==='navigate')return caches.match('/index.html');});}));});
+self.addEventListener('push',e=>{if(!e.data)return;const d=e.data.json();e.waitUntil(self.registration.showNotification(d.title||'💊 HealthVoice GH',{body:d.body||'Time to take your medicine.',icon:'/icon-192.png',tag:d.tag||'hvgh',requireInteraction:true}));});
+self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(clients.openWindow('/'));});
