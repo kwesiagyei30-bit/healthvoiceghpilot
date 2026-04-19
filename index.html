@@ -9,14 +9,11 @@
 <meta name="apple-mobile-web-app-title" content="HealthVoice GH">
 <link rel="manifest" href="manifest.json">
 <title>HealthVoice GH</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-<!-- ██████████████████████████████████████████████
-     STEP 1: PASTE YOUR FIREBASE CONFIG HERE
-     Replace the placeholder values below with
-     the real values from your Firebase console.
-     Instructions: see SETUP.md
-     ██████████████████████████████████████████████ -->
+<!-- ═══════════════════════════════════════════
+     FIREBASE CONFIG — paste your values here
+     ═══════════════════════════════════════════ -->
 <script>
 const FIREBASE_CONFIG = {
   apiKey:            "PASTE_YOUR_API_KEY_HERE",
@@ -26,390 +23,395 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "PASTE_YOUR_MESSAGING_SENDER_ID_HERE",
   appId:             "PASTE_YOUR_APP_ID_HERE"
 };
-// Set to true once you've pasted real Firebase config above
 const FIREBASE_ENABLED = false;
 </script>
 
 <style>
+/* ═══════════════════════ DESIGN TOKENS ═══════════════════════ */
 :root {
-  --forest:#0D4A2F;--green:#1B7A4A;--sage:#3DAA6E;--mint:#7DD4A0;
-  --pale:#EAF7F0;--gold:#E8A020;--amber:#F5C842;--sand:#FBF3E2;
-  --red:#D63B3B;--red-pale:#FFF0F0;--blue:#1A6FAF;--blue-pale:#EAF2FF;
-  --cream:#FDFAF5;--charcoal:#1A2420;--muted:#6B8070;--border:#D5E8DC;
-  --white:#FFFFFF;
-  --shadow:0 4px 20px rgba(13,74,47,0.10);
-  --shadow-lg:0 8px 32px rgba(13,74,47,0.15);
-  --r:20px;--r-sm:12px;
-  --font-h:'Outfit',sans-serif;--font-b:'Sora',sans-serif;
+  --forest:#0D4A2F; --green:#1B7A4A; --sage:#3DAA6E; --mint:#7DD4A0;
+  --pale:#EAF7F0; --gold:#E8A020; --amber:#F5C842;
+  --red:#D63B3B; --red-pale:#FFF0F0;
+  --blue:#1A6FAF; --blue-pale:#EAF2FF;
+  --cream:#FDFAF5; --charcoal:#1A2420; --muted:#6B8070; --border:#D5E8DC;
+  --font-h:'Outfit',sans-serif; --font-b:'Sora',sans-serif;
+  --shadow:0 4px 20px rgba(13,74,47,.10);
+  --shadow-lg:0 8px 32px rgba(13,74,47,.15);
+  --r:20px;
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;background:#0D4A2F;}
-body{font-family:var(--font-b);background:var(--cream);color:var(--charcoal);}
+*,*::before,*::after { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+html,body { height:100%; overflow:hidden; background:#0D4A2F; }
+body { font-family:var(--font-b); background:var(--cream); color:var(--charcoal); }
 
-#app{width:100%;max-width:430px;height:100vh;margin:0 auto;background:var(--cream);display:flex;flex-direction:column;overflow:hidden;position:relative;}
+/* ═══════════════════════ APP SHELL ═══════════════════════ */
+#app { width:100%; max-width:430px; height:100vh; margin:0 auto; background:var(--cream); display:flex; flex-direction:column; overflow:hidden; position:relative; }
 
-/* SCREENS */
-.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--cream);transform:translateX(100%);transition:transform 0.32s cubic-bezier(0.4,0,0.2,1);overflow:hidden;will-change:transform;}
-.screen.active{transform:translateX(0);}
-.screen.prev{transform:translateX(-30%);}
-.scroll-body{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:16px 16px 100px;}
-.scroll-body::-webkit-scrollbar{width:0;}
+/* ═══════════════════════ SCREENS ═══════════════════════ */
+.screen { position:absolute; inset:0; display:flex; flex-direction:column; background:var(--cream); transform:translateX(100%); transition:transform .32s cubic-bezier(.4,0,.2,1); overflow:hidden; will-change:transform; }
+.screen.active { transform:translateX(0); }
+.screen.prev { transform:translateX(-30%); }
+.scroll-body { flex:1; overflow-y:auto; overflow-x:hidden; -webkit-overflow-scrolling:touch; padding:16px 16px 100px; }
+.scroll-body::-webkit-scrollbar { width:0; }
 
-/* APP BAR */
-.app-bar{background:linear-gradient(160deg,var(--forest),var(--green));color:white;padding:52px 18px 20px;position:relative;flex-shrink:0;overflow:hidden;}
-.app-bar::after{content:'';position:absolute;bottom:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.04);}
-.bar-back{position:absolute;left:14px;top:50px;background:rgba(255,255,255,0.18);border:none;color:white;width:38px;height:38px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5;}
-.bar-title{font-family:var(--font-h);font-size:22px;font-weight:800;line-height:1.15;position:relative;z-index:2;}
-.bar-sub{font-size:13px;opacity:.72;margin-top:3px;font-weight:500;position:relative;z-index:2;}
-.bar-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:rgba(255,255,255,0.92);margin-top:8px;position:relative;z-index:2;}
+/* ═══════════════════════ AUDIO INDICATOR ═══════════════════════ */
+#audio-indicator {
+  position:fixed; top:12px; right:12px; z-index:999;
+  background:var(--forest); color:white; border-radius:20px;
+  padding:6px 12px; font-size:11px; font-weight:700;
+  display:flex; align-items:center; gap:6px;
+  opacity:0; transition:opacity .3s; pointer-events:none;
+}
+#audio-indicator.on { opacity:1; }
+.ai-bars { display:flex; gap:2px; align-items:flex-end; height:14px; }
+.ai-bar { width:3px; background:var(--mint); border-radius:2px; animation:aiBar .5s ease-in-out infinite alternate; }
+.ai-bar:nth-child(1){height:6px;} .ai-bar:nth-child(2){height:12px;animation-delay:.1s;} .ai-bar:nth-child(3){height:8px;animation-delay:.2s;} .ai-bar:nth-child(4){height:14px;animation-delay:.3s;} .ai-bar:nth-child(5){height:6px;animation-delay:.4s;}
+@keyframes aiBar{from{transform:scaleY(.4);}to{transform:scaleY(1.2);}}
 
-/* BOTTOM NAV */
-.bottom-nav{background:white;border-top:1.5px solid var(--border);display:flex;position:absolute;bottom:0;left:0;right:0;z-index:50;padding:6px 0 env(safe-area-inset-bottom,8px);}
-.bn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 2px;}
-.bn-ico{font-size:24px;transition:transform .2s;}
-.bn-lbl{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;}
-.bn.on .bn-lbl{color:var(--green);}
-.bn.on .bn-ico{transform:scale(1.15);}
+/* ═══════════════════════ APP BAR ═══════════════════════ */
+.app-bar { background:linear-gradient(160deg,var(--forest),var(--green)); color:white; padding:52px 18px 20px; position:relative; flex-shrink:0; overflow:hidden; }
+.app-bar::after { content:''; position:absolute; bottom:-40px; right:-40px; width:160px; height:160px; border-radius:50%; background:rgba(255,255,255,.04); }
+.bar-back { position:absolute; left:14px; top:50px; background:rgba(255,255,255,.18); border:none; color:white; width:38px; height:38px; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:5; }
+.bar-title { font-family:var(--font-h); font-size:22px; font-weight:800; line-height:1.15; position:relative; z-index:2; }
+.bar-sub { font-size:13px; opacity:.72; margin-top:3px; font-weight:500; position:relative; z-index:2; }
 
-/* CARDS */
-.card{background:white;border-radius:var(--r);border:1.5px solid var(--border);box-shadow:var(--shadow);}
-.icon-row{display:flex;align-items:center;gap:14px;background:white;border-radius:var(--r);border:2px solid var(--border);box-shadow:var(--shadow);padding:18px;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;position:relative;overflow:hidden;}
-.icon-row:active{transform:scale(.97);}
-.ir-ico{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
-.ir-text{flex:1;}
-.ir-label{font-family:var(--font-h);font-size:16px;font-weight:700;color:var(--charcoal);line-height:1.2;}
-.ir-sub{font-size:12px;color:var(--muted);margin-top:3px;font-weight:500;}
-.ir-arr{color:var(--sage);font-size:20px;font-weight:900;}
+/* ═══════════════════════ BOTTOM NAV ═══════════════════════ */
+.bottom-nav { background:white; border-top:1.5px solid var(--border); display:flex; position:absolute; bottom:0; left:0; right:0; z-index:50; padding:6px 0 env(safe-area-inset-bottom,8px); }
+.bn { flex:1; display:flex; flex-direction:column; align-items:center; gap:3px; cursor:pointer; padding:6px 2px; }
+.bn-ico { font-size:22px; transition:transform .2s; }
+.bn-lbl { font-size:9px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.3px; }
+.bn.on .bn-lbl { color:var(--green); }
+.bn.on .bn-ico { transform:scale(1.15); }
 
-/* BUTTONS */
-.btn-primary{background:linear-gradient(135deg,var(--green),var(--forest));color:white;border:none;border-radius:50px;padding:16px 24px;font-family:var(--font-h);font-size:16px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:10px;box-shadow:0 6px 20px rgba(27,122,74,0.3);transition:transform .15s;}
-.btn-primary:active{transform:scale(.97);}
-.btn-secondary{background:white;color:var(--green);border:2px solid var(--green);border-radius:50px;padding:14px 24px;font-family:var(--font-h);font-size:15px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;}
-.btn-secondary:active{background:var(--pale);}
+/* ═══════════════════════ COMMON COMPONENTS ═══════════════════════ */
+.card { background:white; border-radius:var(--r); border:1.5px solid var(--border); box-shadow:var(--shadow); }
+.icon-row { display:flex; align-items:center; gap:14px; background:white; border-radius:var(--r); border:2px solid var(--border); box-shadow:var(--shadow); padding:18px; cursor:pointer; transition:transform .15s,border-color .15s; }
+.icon-row:active { transform:scale(.97); border-color:var(--mint); }
+.ir-ico { width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:28px; flex-shrink:0; }
+.ir-label { font-family:var(--font-h); font-size:16px; font-weight:700; color:var(--charcoal); line-height:1.2; }
+.ir-sub { font-size:12px; color:var(--muted); margin-top:3px; font-weight:500; }
+.ir-arr { color:var(--sage); font-size:20px; font-weight:900; }
+.btn-primary { background:linear-gradient(135deg,var(--green),var(--forest)); color:white; border:none; border-radius:50px; padding:16px 24px; font-family:var(--font-h); font-size:16px; font-weight:700; cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:10px; box-shadow:0 6px 20px rgba(27,122,74,.3); transition:transform .15s; }
+.btn-primary:active { transform:scale(.97); }
+.btn-secondary { background:white; color:var(--green); border:2px solid var(--green); border-radius:50px; padding:14px 24px; font-family:var(--font-h); font-size:15px; font-weight:700; cursor:pointer; width:100%; display:flex; align-items:center; justify-content:center; gap:8px; }
+.btn-secondary:active { background:var(--pale); }
+.sec-label { font-family:var(--font-h); font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--muted); margin-bottom:-4px; }
+.gap-stack { display:flex; flex-direction:column; gap:12px; }
+.pill { display:inline-flex; align-items:center; gap:4px; background:var(--pale); border:1.5px solid var(--border); border-radius:20px; padding:4px 12px; font-size:11px; font-weight:700; color:var(--green); }
 
-/* UTILS */
-.sec-label{font-family:var(--font-h);font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:-4px;}
-.gap-stack{display:flex;flex-direction:column;gap:12px;}
-.mt8{margin-top:8px;}.mt12{margin-top:12px;}.mt16{margin-top:16px;}
-.pill{display:inline-flex;align-items:center;gap:4px;background:var(--pale);border:1.5px solid var(--border);border-radius:20px;padding:4px 12px;font-size:11px;font-weight:700;color:var(--green);}
-
-/* SYNC INDICATOR */
-.sync-dot{width:8px;height:8px;border-radius:50%;background:#5EE89B;display:inline-block;margin-right:4px;}
-.sync-dot.offline{background:#F5C842;}
-.sync-dot.error{background:#D63B3B;}
-#sync-bar{background:rgba(255,255,255,0.12);border-radius:10px;padding:5px 12px;font-size:11px;font-weight:700;color:rgba(255,255,255,.85);display:inline-flex;align-items:center;gap:6px;}
-
-/* ONBOARDING */
-#screen-onboard{background:linear-gradient(170deg,var(--forest) 0%,#081E12 70%);}
-.ob-kente{display:flex;height:6px;width:100%;position:absolute;top:0;}
-.kw{flex:1;}
-.kw:nth-child(3n+1){background:#006B3F;}
-.kw:nth-child(3n+2){background:#FCD116;}
-.kw:nth-child(3n+3){background:#CE1126;}
-.ob-logo{width:100px;height:100px;border-radius:28px;background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:48px;animation:float 3.5s ease-in-out infinite;margin-bottom:20px;}
+/* ═══════════════════════ SPLASH ═══════════════════════ */
+#screen-splash { background:linear-gradient(170deg,var(--forest) 0%,#081E12 70%); }
+.kente-bar { display:flex; height:6px; width:100%; position:absolute; top:0; }
+.kw { flex:1; }
+.kw:nth-child(3n+1){background:#006B3F;} .kw:nth-child(3n+2){background:#FCD116;} .kw:nth-child(3n+3){background:#CE1126;}
+.splash-logo { width:100px; height:100px; border-radius:28px; background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.18); display:flex; align-items:center; justify-content:center; font-size:48px; animation:float 3.5s ease-in-out infinite; margin-bottom:20px; }
 @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
-.ob-name{font-family:var(--font-h);font-size:36px;font-weight:900;color:white;text-align:center;letter-spacing:-1px;}
-.ob-name span{color:var(--amber);}
-.ob-tag{font-size:13px;color:rgba(255,255,255,.6);text-align:center;margin-top:8px;line-height:1.6;padding:0 24px;}
-.ob-langs{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:20px;}
-.ob-lang{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 13px;color:rgba(255,255,255,.85);font-size:12px;font-weight:700;}
-.ob-btn{margin-top:28px;width:calc(100% - 48px);background:var(--amber);color:var(--forest);border:none;border-radius:50px;padding:18px;font-family:var(--font-h);font-size:18px;font-weight:900;cursor:pointer;box-shadow:0 8px 28px rgba(232,160,32,.4);}
-.ob-pid{color:rgba(255,255,255,.4);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:12px;}
+.splash-name { font-family:var(--font-h); font-size:36px; font-weight:900; color:white; text-align:center; letter-spacing:-1px; }
+.splash-name span { color:var(--amber); }
+.pid-input { width:calc(100% - 48px); background:rgba(255,255,255,.1); border:2px solid rgba(255,255,255,.25); border-radius:16px; padding:14px 18px; font-family:var(--font-b); font-size:18px; color:white; text-align:center; letter-spacing:2px; outline:none; font-weight:700; margin-bottom:12px; }
+.pid-input::placeholder { color:rgba(255,255,255,.35); font-size:14px; letter-spacing:1px; }
+.pid-input:focus { border-color:var(--amber); }
+.splash-btn { width:calc(100% - 48px); background:var(--amber); color:var(--forest); border:none; border-radius:50px; padding:18px; font-family:var(--font-h); font-size:18px; font-weight:900; cursor:pointer; box-shadow:0 8px 28px rgba(232,160,32,.4); }
 
-/* PARTICIPANT ID ENTRY */
-.pid-input{width:calc(100% - 48px);background:rgba(255,255,255,0.1);border:2px solid rgba(255,255,255,0.25);border-radius:16px;padding:14px 18px;font-family:var(--font-b);font-size:18px;color:white;text-align:center;letter-spacing:2px;outline:none;font-weight:700;margin-bottom:12px;}
-.pid-input::placeholder{color:rgba(255,255,255,0.35);letter-spacing:1px;font-size:14px;}
-.pid-input:focus{border-color:var(--amber);}
+/* ═══════════════════════ LANGUAGE SCREEN ═══════════════════════ */
+.lang-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.lang-card { background:white; border:2.5px solid var(--border); border-radius:var(--r); padding:20px 12px 16px; text-align:center; cursor:pointer; transition:all .2s; box-shadow:var(--shadow); position:relative; }
+.lang-card.sel { border-color:var(--green); background:var(--pale); }
+.lang-card.sel::after { content:'✓'; position:absolute; top:10px; right:12px; width:22px; height:22px; background:var(--green); color:white; border-radius:50%; font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center; }
+.lang-card:active { transform:scale(.97); }
+.lc-ico { font-size:38px; display:block; margin-bottom:8px; }
+.lc-name { font-family:var(--font-h); font-size:18px; font-weight:800; color:var(--charcoal); }
+.lc-reg { font-size:10px; color:var(--muted); font-weight:600; margin-top:3px; line-height:1.4; }
+.lc-preview { display:inline-flex; align-items:center; gap:4px; background:var(--pale); border:1px solid var(--border); border-radius:8px; padding:4px 10px; font-size:11px; font-weight:700; color:var(--green); margin-top:8px; cursor:pointer; }
 
-/* LANGUAGE SCREEN */
-.lang-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.lang-card{background:white;border:2.5px solid var(--border);border-radius:var(--r);padding:20px 12px 16px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:var(--shadow);position:relative;}
-.lang-card.sel{border-color:var(--green);background:var(--pale);}
-.lang-card.sel::after{content:'✓';position:absolute;top:10px;right:12px;width:22px;height:22px;background:var(--green);color:white;border-radius:50%;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;}
-.lang-card:active{transform:scale(.97);}
-.lc-ico{font-size:38px;display:block;margin-bottom:8px;}
-.lc-name{font-family:var(--font-h);font-size:17px;font-weight:800;color:var(--charcoal);}
-.lc-reg{font-size:10px;color:var(--muted);font-weight:600;margin-top:3px;line-height:1.4;}
-.lang-preview{display:inline-flex;align-items:center;gap:4px;background:var(--pale);border:1px solid var(--border);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--green);margin-top:8px;cursor:pointer;}
-
-/* HOME */
-.home-header{background:linear-gradient(160deg,var(--forest),var(--green));padding:52px 18px 0;position:relative;flex-shrink:0;overflow:hidden;}
-.home-kente{display:flex;height:4px;}
-.home-kente div{flex:1;}
-.hvc-orb{width:50px;height:50px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;box-shadow:0 4px 14px rgba(232,160,32,.4);}
-
-/* VOICE SCREEN */
-.voice-body{flex:1;display:flex;flex-direction:column;align-items:center;gap:16px;padding:18px 16px 100px;overflow-y:auto;}
-.voice-body::-webkit-scrollbar{width:0;}
-.lang-chips{display:flex;gap:8px;overflow-x:auto;width:100%;padding-bottom:2px;}
-.lang-chips::-webkit-scrollbar{height:0;}
-.lchip{display:flex;align-items:center;gap:6px;background:white;border:2px solid var(--border);border-radius:20px;padding:7px 14px;font-size:12px;font-weight:700;color:var(--charcoal);cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .2s;}
-.lchip.on{background:var(--pale);border-color:var(--green);color:var(--green);}
-.orb-wrap{position:relative;width:150px;height:150px;display:flex;align-items:center;justify-content:center;}
-.orb-ring{position:absolute;border-radius:50%;border:2px solid rgba(27,122,74,.15);animation:oRing 2.8s ease-in-out infinite;}
-.orb-ring:nth-child(1){width:150px;height:150px;}
-.orb-ring:nth-child(2){width:120px;height:120px;animation-delay:.5s;}
-.orb-ring:nth-child(3){width:92px;height:92px;animation-delay:1s;}
+/* ═══════════════════════ VOICE SCREEN ═══════════════════════ */
+.voice-body { flex:1; display:flex; flex-direction:column; align-items:center; gap:16px; padding:18px 16px 100px; overflow-y:auto; }
+.voice-body::-webkit-scrollbar { width:0; }
+.orb-wrap { position:relative; width:150px; height:150px; display:flex; align-items:center; justify-content:center; }
+.orb-ring { position:absolute; border-radius:50%; border:2px solid rgba(27,122,74,.15); animation:oRing 2.8s ease-in-out infinite; }
+.orb-ring:nth-child(1){width:150px;height:150px;} .orb-ring:nth-child(2){width:120px;height:120px;animation-delay:.5s;} .orb-ring:nth-child(3){width:92px;height:92px;animation-delay:1s;}
 @keyframes oRing{0%,100%{transform:scale(1);opacity:.5;}50%{transform:scale(1.06);opacity:1;}}
-.voice-orb{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--sage),var(--green));display:flex;align-items:center;justify-content:center;font-size:36px;cursor:pointer;z-index:2;box-shadow:0 8px 28px rgba(27,122,74,.4);transition:transform .2s;border:none;}
-.voice-orb:active{transform:scale(.95);}
-.voice-orb.listening{background:linear-gradient(135deg,var(--gold),#C05A2A);animation:orbPulse 1s ease-in-out infinite;}
-.voice-orb.speaking{background:linear-gradient(135deg,#1A6FAF,var(--forest));}
+.voice-orb { width:80px; height:80px; border-radius:50%; background:linear-gradient(135deg,var(--sage),var(--green)); display:flex; align-items:center; justify-content:center; font-size:36px; cursor:pointer; z-index:2; box-shadow:0 8px 28px rgba(27,122,74,.4); transition:transform .2s; border:none; }
+.voice-orb:active { transform:scale(.95); }
+.voice-orb.listening { background:linear-gradient(135deg,var(--gold),#C05A2A); animation:orbPulse 1s ease-in-out infinite; }
+.voice-orb.speaking { background:linear-gradient(135deg,#1A6FAF,var(--forest)); }
 @keyframes orbPulse{0%,100%{box-shadow:0 8px 28px rgba(232,160,32,.4),0 0 0 0 rgba(232,160,32,.4);}50%{box-shadow:0 8px 28px rgba(232,160,32,.4),0 0 0 18px rgba(232,160,32,0);}}
-.wave-bar-wrap{display:flex;gap:4px;align-items:flex-end;height:32px;opacity:0;transition:opacity .3s;}
-.wave-bar-wrap.on{opacity:1;}
-.wbar{width:4px;border-radius:2px;background:var(--sage);animation:wAnim .6s ease-in-out infinite alternate;}
-.wbar:nth-child(1){height:10px;}.wbar:nth-child(2){height:22px;animation-delay:.08s;}.wbar:nth-child(3){height:16px;animation-delay:.16s;}.wbar:nth-child(4){height:28px;animation-delay:.24s;}.wbar:nth-child(5){height:18px;animation-delay:.32s;}.wbar:nth-child(6){height:24px;animation-delay:.24s;}.wbar:nth-child(7){height:12px;animation-delay:.16s;}
+.wave-bars { display:flex; gap:4px; align-items:flex-end; height:32px; opacity:0; transition:opacity .3s; }
+.wave-bars.on { opacity:1; }
+.wbar { width:4px; border-radius:2px; background:var(--sage); animation:wAnim .6s ease-in-out infinite alternate; }
+.wbar:nth-child(1){height:10px;} .wbar:nth-child(2){height:22px;animation-delay:.08s;} .wbar:nth-child(3){height:16px;animation-delay:.16s;} .wbar:nth-child(4){height:28px;animation-delay:.24s;} .wbar:nth-child(5){height:18px;animation-delay:.32s;} .wbar:nth-child(6){height:24px;animation-delay:.24s;} .wbar:nth-child(7){height:12px;animation-delay:.16s;}
 @keyframes wAnim{from{transform:scaleY(.4);}to{transform:scaleY(1.2);}}
-.orb-status{font-family:var(--font-h);font-size:15px;font-weight:700;color:var(--forest);text-align:center;}
-.qq-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;width:100%;}
-.qq{background:white;border:1.5px solid var(--border);border-radius:14px;padding:12px 14px;font-size:13px;font-weight:600;color:var(--charcoal);cursor:pointer;display:flex;align-items:center;gap:8px;width:100%;transition:all .2s;text-align:left;border-left-width:3px;}
-.qq:active{background:var(--pale);border-color:var(--green);}
-.resp-card{background:white;border:2px solid var(--border);border-radius:var(--r);padding:16px;width:100%;box-shadow:var(--shadow-lg);display:none;animation:slideUp .35s cubic-bezier(.2,.8,.3,1);}
-.resp-card.on{display:block;}
+.orb-status { font-family:var(--font-h); font-size:15px; font-weight:700; color:var(--forest); text-align:center; }
+.qq { background:white; border:1.5px solid var(--border); border-radius:14px; padding:12px 14px; font-size:13px; font-weight:600; color:var(--charcoal); cursor:pointer; display:flex; align-items:center; gap:8px; width:100%; transition:all .2s; text-align:left; border-left-width:3px; }
+.qq:active { background:var(--pale); border-color:var(--green); }
+.resp-card { background:white; border:2px solid var(--border); border-radius:var(--r); padding:16px; width:100%; box-shadow:var(--shadow-lg); display:none; animation:slideUp .35s cubic-bezier(.2,.8,.3,1); }
+.resp-card.on { display:block; }
 @keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.resp-lang-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;}
-.resp-lang-badge{display:flex;align-items:center;gap:5px;background:var(--pale);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--green);}
-.resp-play-btn{background:var(--green);color:white;border:none;border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;}
-.resp-native{font-size:14px;font-weight:600;color:var(--charcoal);line-height:1.7;border-left:3px solid var(--sage);padding-left:12px;margin-bottom:12px;}
-.resp-steps{list-style:none;display:flex;flex-direction:column;gap:8px;}
-.resp-step{display:flex;gap:10px;align-items:flex-start;}
-.rs-num{width:22px;height:22px;border-radius:50%;background:var(--pale);border:1.5px solid var(--mint);color:var(--green);font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
-.rs-text{font-size:13px;color:var(--charcoal);line-height:1.6;font-weight:500;}
-.audio-bar{background:var(--pale);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-top:12px;}
-.ap-btn{font-size:18px;cursor:pointer;background:none;border:none;}
-.ap-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
-.ap-fill{height:100%;background:var(--green);border-radius:2px;width:0%;transition:width .1s;}
-.ap-time{font-size:11px;font-weight:700;color:var(--muted);}
+.resp-native { font-size:14px; font-weight:600; color:var(--charcoal); line-height:1.7; border-left:3px solid var(--sage); padding-left:12px; margin-bottom:12px; }
+.resp-steps { list-style:none; display:flex; flex-direction:column; gap:8px; }
+.resp-step { display:flex; gap:10px; align-items:flex-start; }
+.rs-num { width:22px; height:22px; border-radius:50%; background:var(--pale); border:1.5px solid var(--mint); color:var(--green); font-size:11px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0; margin-top:2px; }
+.rs-text { font-size:13px; color:var(--charcoal); line-height:1.6; font-weight:500; }
+.audio-bar { background:var(--pale); border-radius:10px; padding:10px 14px; display:flex; align-items:center; gap:10px; margin-top:12px; }
+.ap-btn { font-size:18px; cursor:pointer; background:none; border:none; }
+.ap-track { flex:1; height:4px; background:var(--border); border-radius:2px; overflow:hidden; }
+.ap-fill { height:100%; background:var(--green); border-radius:2px; width:0%; transition:width .1s; }
+.ap-time { font-size:11px; font-weight:700; color:var(--muted); }
 
-/* TOPICS */
-.topic-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.topic-card{background:white;border:2px solid var(--border);border-radius:var(--r);padding:20px 12px 16px;text-align:center;cursor:pointer;transition:all .2s;box-shadow:var(--shadow);}
-.topic-card:active{transform:scale(.96);border-color:var(--mint);}
-.tc-ico{font-size:40px;display:block;margin-bottom:10px;}
-.tc-lbl{font-family:var(--font-h);font-size:14px;font-weight:700;color:var(--charcoal);line-height:1.3;}
-.tc-sub{font-size:10px;color:var(--muted);margin-top:4px;}
-.sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s;}
-.sheet-backdrop.on{opacity:1;pointer-events:auto;}
-.bottom-sheet{position:fixed;bottom:0;left:50%;transform:translateX(-50%) translateY(100%);width:100%;max-width:430px;background:white;border-radius:24px 24px 0 0;z-index:201;transition:transform .35s cubic-bezier(.4,0,.2,1);padding:20px 20px 40px;max-height:80vh;overflow-y:auto;}
-.bottom-sheet.on{transform:translateX(-50%) translateY(0);}
-.sheet-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 20px;}
-.sheet-title{font-family:var(--font-h);font-size:20px;font-weight:800;color:var(--charcoal);margin-bottom:16px;}
-.info-step{display:flex;gap:12px;align-items:flex-start;margin-bottom:14px;}
-.is-ico{font-size:24px;flex-shrink:0;margin-top:2px;}
-.is-text{font-size:14px;color:var(--charcoal);line-height:1.65;font-weight:500;}
-.is-text strong{font-weight:700;color:var(--forest);}
+/* ═══════════════════════ TOPICS ═══════════════════════ */
+.topic-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.topic-card { background:white; border:2px solid var(--border); border-radius:var(--r); padding:20px 12px 16px; text-align:center; cursor:pointer; transition:all .2s; box-shadow:var(--shadow); }
+.topic-card:active { transform:scale(.96); border-color:var(--mint); }
+.tc-ico { font-size:40px; display:block; margin-bottom:10px; }
+.tc-lbl { font-family:var(--font-h); font-size:14px; font-weight:700; color:var(--charcoal); line-height:1.3; }
+.tc-sub { font-size:10px; color:var(--muted); margin-top:4px; }
+.sheet-backdrop { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:200; opacity:0; pointer-events:none; transition:opacity .3s; }
+.sheet-backdrop.on { opacity:1; pointer-events:auto; }
+.bottom-sheet { position:fixed; bottom:0; left:50%; transform:translateX(-50%) translateY(100%); width:100%; max-width:430px; background:white; border-radius:24px 24px 0 0; z-index:201; transition:transform .35s cubic-bezier(.4,0,.2,1); padding:20px 20px 40px; max-height:80vh; overflow-y:auto; }
+.bottom-sheet.on { transform:translateX(-50%) translateY(0); }
+.sheet-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; }
+.sheet-title { font-family:var(--font-h); font-size:20px; font-weight:800; color:var(--charcoal); margin-bottom:16px; }
+.info-step { display:flex; gap:12px; align-items:flex-start; margin-bottom:14px; }
+.is-ico { font-size:24px; flex-shrink:0; margin-top:2px; }
+.is-text { font-size:14px; color:var(--charcoal); line-height:1.65; font-weight:500; }
+.is-text strong { font-weight:700; color:var(--forest); }
 
-/* REMINDERS */
-.rem-item{background:white;border:1.5px solid var(--border);border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;box-shadow:var(--shadow);}
-.ri-ico{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
-.ri-name{font-weight:700;font-size:15px;color:var(--charcoal);}
-.ri-time{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;}
-.ri-dose{background:var(--pale);border-radius:8px;padding:2px 8px;font-size:11px;font-weight:700;color:var(--green);display:inline-block;margin-top:5px;}
-.toggle{width:46px;height:26px;border-radius:13px;background:var(--green);position:relative;cursor:pointer;flex-shrink:0;transition:background .2s;}
-.toggle::after{content:'';position:absolute;width:20px;height:20px;background:white;border-radius:50%;top:3px;right:3px;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:right .2s;}
-.toggle.off{background:#D1D5DB;}
-.toggle.off::after{right:22px;}
-.next-dot{background:var(--gold);color:white;border-radius:8px;padding:3px 8px;font-size:10px;font-weight:800;}
+/* ═══════════════════════ REMINDERS ═══════════════════════ */
+.rem-item { background:white; border:1.5px solid var(--border); border-radius:16px; padding:14px; display:flex; align-items:center; gap:12px; box-shadow:var(--shadow); }
+.ri-ico { width:48px; height:48px; border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+.ri-name { font-weight:700; font-size:15px; color:var(--charcoal); }
+.ri-time { font-size:12px; color:var(--muted); font-weight:600; margin-top:2px; }
+.ri-dose { background:var(--pale); border-radius:8px; padding:2px 8px; font-size:11px; font-weight:700; color:var(--green); display:inline-block; margin-top:5px; }
+.toggle { width:46px; height:26px; border-radius:13px; background:var(--green); position:relative; cursor:pointer; flex-shrink:0; transition:background .2s; }
+.toggle::after { content:''; position:absolute; width:20px; height:20px; background:white; border-radius:50%; top:3px; right:3px; box-shadow:0 1px 4px rgba(0,0,0,.2); transition:right .2s; }
+.toggle.off { background:#D1D5DB; }
+.toggle.off::after { right:22px; }
 
-/* NURSE MODE */
-.nurse-header{background:linear-gradient(160deg,#0B3A5E,#1A6FAF);padding:52px 18px 22px;color:white;flex-shrink:0;position:relative;overflow:hidden;}
-.patient-card{background:white;border:2px solid var(--border);border-radius:var(--r);padding:14px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow);}
-.pt-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#E8D5C4,#C4A882);display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;}
-.pt-name{font-family:var(--font-h);font-size:16px;font-weight:800;color:var(--charcoal);}
-.pt-info{font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;}
-.pt-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;}
-.pt-tag{background:var(--pale);border:1px solid var(--border);border-radius:8px;padding:2px 8px;font-size:10px;font-weight:700;color:var(--green);}
-.script-card{background:white;border:1.5px solid var(--border);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
-.sc-hdr{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;transition:background .2s;}
-.sc-hdr:active{background:var(--pale);}
-.sc-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
-.sc-title{font-family:var(--font-h);font-size:15px;font-weight:700;color:var(--charcoal);}
-.sc-sub{font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;}
-.sc-play-btn{margin-left:auto;background:var(--green);color:white;border:none;border-radius:10px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:5px;white-space:nowrap;}
-.sc-body{padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s;}
-.sc-body.on{max-height:400px;padding:0 16px 16px;}
-.script-text{background:var(--pale);border-radius:12px;padding:14px;font-size:13px;color:var(--charcoal);line-height:1.75;font-weight:500;border-left:3px solid var(--sage);}
-.sc-actions{display:flex;gap:8px;margin-top:10px;}
-.sc-act{flex:1;background:var(--pale);border:1.5px solid var(--border);border-radius:10px;padding:8px;font-size:12px;font-weight:700;color:var(--charcoal);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;}
+/* ═══════════════════════ NURSE MODE ═══════════════════════ */
+.nurse-header { background:linear-gradient(160deg,#0B3A5E,#1A6FAF); padding:52px 18px 22px; color:white; flex-shrink:0; }
+.patient-card { background:white; border:2px solid var(--border); border-radius:var(--r); padding:14px; display:flex; gap:12px; align-items:center; box-shadow:var(--shadow); }
+.pt-avatar { width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#E8D5C4,#C4A882); display:flex; align-items:center; justify-content:center; font-size:26px; flex-shrink:0; }
+.pt-tag { background:var(--pale); border:1px solid var(--border); border-radius:8px; padding:2px 8px; font-size:10px; font-weight:700; color:var(--green); }
+.script-card { background:white; border:1.5px solid var(--border); border-radius:16px; overflow:hidden; box-shadow:var(--shadow); }
+.sc-hdr { padding:14px 16px; display:flex; align-items:center; gap:12px; cursor:pointer; }
+.sc-hdr:active { background:var(--pale); }
+.sc-ico { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:22px; flex-shrink:0; }
+.sc-play-btn { margin-left:auto; background:var(--green); color:white; border:none; border-radius:10px; padding:6px 12px; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; }
+.sc-body { padding:0 16px; max-height:0; overflow:hidden; transition:max-height .3s,padding .3s; }
+.sc-body.on { max-height:500px; padding:0 16px 16px; }
+.script-text { background:var(--pale); border-radius:12px; padding:14px; font-size:13px; color:var(--charcoal); line-height:1.75; border-left:3px solid var(--sage); }
+.translate-badge { display:inline-flex; align-items:center; gap:4px; background:#FFF3E8; border:1px solid #F5C8A0; border-radius:6px; padding:2px 8px; font-size:10px; font-weight:700; color:#C05A2A; margin-bottom:6px; }
 
-/* FEEDBACK */
-.star-row{display:flex;gap:10px;justify-content:center;margin:16px 0;}
-.star{font-size:36px;cursor:pointer;transition:transform .15s;filter:grayscale(1);opacity:.4;}
-.star.on{filter:none;opacity:1;transform:scale(1.15);}
-.feedback-q{font-family:var(--font-h);font-size:16px;font-weight:700;color:var(--charcoal);margin-bottom:8px;line-height:1.4;}
-.likert{display:flex;gap:8px;flex-wrap:wrap;}
-.likert-opt{background:white;border:2px solid var(--border);border-radius:12px;padding:10px 14px;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;flex:1;min-width:calc(50% - 4px);text-align:center;}
-.likert-opt.on{border-color:var(--green);background:var(--pale);color:var(--green);}
-.feedback-text{width:100%;background:var(--pale);border:1.5px solid var(--border);border-radius:12px;padding:12px;font-family:var(--font-b);font-size:14px;resize:vertical;min-height:80px;outline:none;}
-.feedback-text:focus{border-color:var(--green);}
+/* ═══════════════════════ FEEDBACK ═══════════════════════ */
+.star-row { display:flex; gap:10px; justify-content:center; margin:16px 0; }
+.star { font-size:36px; cursor:pointer; transition:transform .15s; filter:grayscale(1); opacity:.4; }
+.star.on { filter:none; opacity:1; transform:scale(1.15); }
+.likert { display:flex; gap:8px; flex-wrap:wrap; }
+.likert-opt { background:white; border:2px solid var(--border); border-radius:12px; padding:10px 14px; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; flex:1; min-width:calc(50% - 4px); text-align:center; }
+.likert-opt.on { border-color:var(--green); background:var(--pale); color:var(--green); }
+.feedback-text { width:100%; background:var(--pale); border:1.5px solid var(--border); border-radius:12px; padding:12px; font-family:var(--font-b); font-size:14px; resize:vertical; min-height:80px; outline:none; }
+.feedback-text:focus { border-color:var(--green); }
 
-/* MODALS */
-.modal{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .3s;}
-.modal.on{opacity:1;pointer-events:auto;}
-.modal-box{width:100%;background:white;border-radius:24px 24px 0 0;padding:20px 20px 40px;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);}
-.modal.on .modal-box{transform:translateY(0);}
-.modal-title{font-family:var(--font-h);font-size:20px;font-weight:800;margin-bottom:18px;}
-.form-group{margin-bottom:14px;}
-.form-label{font-size:13px;font-weight:700;color:var(--charcoal);margin-bottom:6px;display:block;}
-.form-input{width:100%;background:var(--pale);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;font-family:var(--font-b);font-size:15px;color:var(--charcoal);outline:none;}
-.form-input:focus{border-color:var(--green);}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* ═══════════════════════ MODALS ═══════════════════════ */
+.modal { position:fixed; inset:0; z-index:300; display:flex; align-items:flex-end; background:rgba(0,0,0,.5); opacity:0; pointer-events:none; transition:opacity .3s; }
+.modal.on { opacity:1; pointer-events:auto; }
+.modal-box { width:100%; background:white; border-radius:24px 24px 0 0; padding:20px 20px 40px; transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); }
+.modal.on .modal-box { transform:translateY(0); }
+.modal-title { font-family:var(--font-h); font-size:20px; font-weight:800; margin-bottom:18px; }
+.form-group { margin-bottom:14px; }
+.form-label { font-size:13px; font-weight:700; color:var(--charcoal); margin-bottom:6px; display:block; }
+.form-input { width:100%; background:var(--pale); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; font-family:var(--font-b); font-size:15px; color:var(--charcoal); outline:none; }
+.form-input:focus { border-color:var(--green); }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
 
-/* TOAST */
-#toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--charcoal);color:white;border-radius:12px;padding:10px 20px;font-size:13px;font-weight:600;z-index:1000;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
-#toast.on{opacity:1;}
-
-/* NOTIF CARD */
-.notif-card{background:linear-gradient(135deg,#FBF3E2,#FFF8EE);border:2px solid #F5C842;border-radius:var(--r);padding:16px;display:flex;gap:12px;align-items:flex-start;}
+/* ═══════════════════════ TOAST ═══════════════════════ */
+#toast { position:fixed; top:20px; left:50%; transform:translateX(-50%); background:var(--charcoal); color:white; border-radius:12px; padding:10px 20px; font-size:13px; font-weight:600; z-index:1000; opacity:0; transition:opacity .3s; pointer-events:none; white-space:nowrap; }
+#toast.on { opacity:1; }
 </style>
 </head>
 <body>
 <div id="app">
 
-<!-- ================================================ ONBOARD ================================================ -->
-<div class="screen active" id="screen-onboard">
+<!-- ════════════════════ AUDIO INDICATOR ════════════════════ -->
+<div id="audio-indicator">
+  <div class="ai-bars">
+    <div class="ai-bar"></div><div class="ai-bar"></div><div class="ai-bar"></div>
+    <div class="ai-bar"></div><div class="ai-bar"></div>
+  </div>
+  <span id="ai-label">Playing…</span>
+</div>
+
+<!-- ════════════════════════════════════════════════════════
+     SCREEN 1 — SPLASH / PARTICIPANT ID
+     ════════════════════════════════════════════════════════ -->
+<div class="screen active" id="screen-splash">
   <div style="flex:1;background:linear-gradient(170deg,var(--forest) 0%,#081E12 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:24px;">
-    <div class="ob-kente" id="obKente"></div>
-    <div class="ob-logo">🏥</div>
-    <div class="ob-name">Health<span>Voice</span> GH</div>
-    <div class="ob-tag">Voice health literacy in your language.<br>Free · Offline · Private</div>
-    <div class="ob-langs">
-      <div class="ob-lang">🌿 Twi</div>
-      <div class="ob-lang">🌊 Ga</div>
-      <div class="ob-lang">🌻 Ewe</div>
-      <div class="ob-lang">🌙 Hausa</div>
+    <div class="kente-bar" id="kente"></div>
+    <div class="splash-logo">🏥</div>
+    <div class="splash-name">Health<span>Voice</span> GH</div>
+    <div style="color:rgba(255,255,255,.6);font-size:13px;text-align:center;margin-top:8px;line-height:1.6;padding:0 20px;">Voice health literacy in your language</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px;">
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 13px;color:rgba(255,255,255,.85);font-size:12px;font-weight:700;">🌿 Twi</span>
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 13px;color:rgba(255,255,255,.85);font-size:12px;font-weight:700;">🌊 Ga</span>
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 13px;color:rgba(255,255,255,.85);font-size:12px;font-weight:700;">🌻 Ewe</span>
+      <span style="background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);border-radius:20px;padding:5px 13px;color:rgba(255,255,255,.85);font-size:12px;font-weight:700;">🌙 Hausa</span>
     </div>
-    <div style="height:28px;"></div>
-    <div style="color:rgba(255,255,255,.6);font-size:13px;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Enter your Participant ID</div>
-    <input class="pid-input" id="pid-input" placeholder="e.g. P001" maxlength="10" />
-    <button class="ob-btn" onclick="startOnboard()">Get Started →</button>
-    <div class="ob-pid">📴 Works Offline · 🔒 Data is private</div>
+    <div style="height:24px;"></div>
+    <div style="color:rgba(255,255,255,.6);font-size:13px;font-weight:700;margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px;">Participant ID</div>
+    <input class="pid-input" id="pid-input" placeholder="e.g. P001" maxlength="10"/>
+    <button class="splash-btn" onclick="startApp()">Get Started →</button>
+    <div style="color:rgba(255,255,255,.35);font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:14px;">📴 Works Offline · 🔒 Private</div>
   </div>
 </div>
 
-<!-- ================================================ LANGUAGE ================================================ -->
+<!-- ════════════════════════════════════════════════════════
+     SCREEN 2 — LANGUAGE SELECT
+     ════════════════════════════════════════════════════════ -->
 <div class="screen" id="screen-language">
   <div class="app-bar">
     <div class="bar-title">Choose Your Language</div>
-    <div class="bar-sub">Tia wo kasa — Speak yours</div>
-    <div class="bar-badge">🔊 Tap to hear a preview</div>
+    <div class="bar-sub">Tia wo kasa — Select yours</div>
   </div>
   <div class="scroll-body gap-stack">
-    <div class="notif-card">
+    <div style="background:linear-gradient(135deg,#FBF3E2,#FFF8EE);border:2px solid var(--amber);border-radius:var(--r);padding:16px;display:flex;gap:12px;align-items:flex-start;">
       <div style="font-size:28px;">🔊</div>
       <div>
         <div style="font-family:var(--font-h);font-size:15px;font-weight:800;">Audio First</div>
-        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;">Tap a language — the app will speak to you. No reading needed.</div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;line-height:1.5;">Tap a language to hear a preview. The app will speak to you in your language.</div>
       </div>
     </div>
     <div class="lang-grid">
-      <div class="lang-card" onclick="selectLang(this,'twi','🌿')" id="lc-twi">
+      <div class="lang-card" onclick="selectLang('twi',this)" id="lc-twi">
         <span class="lc-ico">🌿</span>
         <div class="lc-name">Twi</div>
         <div class="lc-reg">Akan · Ashanti &amp; Central</div>
-        <div class="lang-preview" onclick="event.stopPropagation();previewLang('twi')">🔊 Preview</div>
+        <div class="lc-preview" onclick="event.stopPropagation();previewLang('twi')">🔊 Preview</div>
       </div>
-      <div class="lang-card" onclick="selectLang(this,'ga','🌊')" id="lc-ga">
+      <div class="lang-card" onclick="selectLang('ga',this)" id="lc-ga">
         <span class="lc-ico">🌊</span>
         <div class="lc-name">Ga</div>
         <div class="lc-reg">Greater Accra Region</div>
-        <div class="lang-preview" onclick="event.stopPropagation();previewLang('ga')">🔊 Preview</div>
+        <div class="lc-preview" onclick="event.stopPropagation();previewLang('ga')">🔊 Preview</div>
       </div>
-      <div class="lang-card" onclick="selectLang(this,'ewe','🌻')" id="lc-ewe">
+      <div class="lang-card" onclick="selectLang('ewe',this)" id="lc-ewe">
         <span class="lc-ico">🌻</span>
         <div class="lc-name">Ewe</div>
         <div class="lc-reg">Volta &amp; Oti Regions</div>
-        <div class="lang-preview" onclick="event.stopPropagation();previewLang('ewe')">🔊 Preview</div>
+        <div class="lc-preview" onclick="event.stopPropagation();previewLang('ewe')">🔊 Preview</div>
       </div>
-      <div class="lang-card" onclick="selectLang(this,'hausa','🌙')" id="lc-hausa">
+      <div class="lang-card" onclick="selectLang('hausa',this)" id="lc-hausa">
         <span class="lc-ico">🌙</span>
         <div class="lc-name">Hausa</div>
         <div class="lc-reg">Northern Ghana</div>
-        <div class="lang-preview" onclick="event.stopPropagation();previewLang('hausa')">🔊 Preview</div>
+        <div class="lc-preview" onclick="event.stopPropagation();previewLang('hausa')">🔊 Preview</div>
       </div>
     </div>
-    <div class="lang-card" onclick="selectLang(this,'english','🇬🇭')" id="lc-english" style="display:flex;align-items:center;gap:14px;padding:14px 18px;text-align:left;">
+    <div class="lang-card" onclick="selectLang('english',this)" id="lc-english" style="display:flex;align-items:center;gap:14px;padding:14px 18px;text-align:left;">
       <span style="font-size:30px;">🇬🇭</span>
       <div><div class="lc-name">English</div><div class="lc-reg" style="margin-top:2px;">Also available</div></div>
     </div>
-    <button class="btn-primary" id="lang-continue-btn" onclick="goTo('home')" style="opacity:.4;pointer-events:none;" disabled>✓ &nbsp;Continue</button>
+    <button class="btn-primary" id="lang-continue-btn" onclick="goTo('home')" style="opacity:.4;pointer-events:none;" disabled>✓ &nbsp;<span data-t="continue">Continue</span></button>
   </div>
 </div>
 
-<!-- ================================================ HOME ================================================ -->
+<!-- ════════════════════════════════════════════════════════
+     SCREEN 3 — HOME
+     ════════════════════════════════════════════════════════ -->
 <div class="screen" id="screen-home">
-  <div class="home-header">
-    <div style="color:rgba(255,255,255,.7);font-size:13px;font-weight:600;margin-bottom:3px;">Akwaaba! Welcome,</div>
-    <div style="font-family:var(--font-h);font-size:23px;font-weight:800;color:white;line-height:1.2;" id="home-title">What do you need help with?</div>
-    <div style="display:flex;gap:10px;align-items:center;margin:10px 0 0;">
+  <div style="background:linear-gradient(160deg,var(--forest),var(--green));padding:52px 18px 0;position:relative;flex-shrink:0;overflow:hidden;">
+    <div style="color:rgba(255,255,255,.7);font-size:13px;font-weight:600;margin-bottom:3px;" data-t="welcome_greeting">Akwaaba! Welcome,</div>
+    <div style="font-family:var(--font-h);font-size:23px;font-weight:800;color:white;line-height:1.2;" data-t="home_question">What do you need help with?</div>
+    <div style="display:flex;gap:10px;align-items:center;margin:10px 0 0;flex-wrap:wrap;">
       <span class="pill" id="home-lang-pill">🌿 Twi</span>
-      <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:10px;padding:5px 10px;">
-        <div id="sync-dot-home" class="sync-dot offline"></div>
-        <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.85);" id="sync-label-home">Offline</span>
-      </div>
       <span class="pill" id="home-pid-pill" style="display:none;"></span>
-    </div>
-    <div style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:18px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;margin:14px 0 20px;" onclick="goTo('voice')">
-      <div class="hvc-orb">🎤</div>
-      <div>
-        <div style="font-family:var(--font-h);font-size:16px;font-weight:800;color:white;">Tap &amp; Speak</div>
-        <div style="font-size:12px;color:rgba(255,255,255,.65);margin-top:2px;">Ask any health question in your language</div>
+      <div style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:10px;padding:5px 10px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:#5EE89B;animation:p2 2s infinite;" id="sync-dot"></div>
+        <span style="font-size:11px;font-weight:700;color:rgba(255,255,255,.85);" id="sync-lbl">Offline</span>
       </div>
-      <span style="color:rgba(255,255,255,.4);font-size:20px;">›</span>
     </div>
-    <div class="home-kente"><div style="background:#006B3F;"></div><div style="background:#FCD116;"></div><div style="background:#CE1126;"></div></div>
+    <style>@keyframes p2{0%,100%{box-shadow:0 0 0 2px rgba(94,232,155,.3);}50%{box-shadow:0 0 0 5px rgba(94,232,155,.1);}}</style>
+    <div style="background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.2);border-radius:18px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;margin:14px 0 20px;" onclick="goTo('voice')">
+      <div style="width:50px;height:50px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">🎤</div>
+      <div>
+        <div style="font-family:var(--font-h);font-size:16px;font-weight:800;color:white;" data-t="tap_speak">Tap &amp; Speak</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.65);margin-top:2px;" data-t="ask_question">Ask any health question in your language</div>
+      </div>
+      <span style="color:rgba(255,255,255,.4);font-size:20px;margin-left:auto;">›</span>
+    </div>
+    <div style="display:flex;height:4px;"><div style="flex:1;background:#006B3F;"></div><div style="flex:1;background:#FCD116;"></div><div style="flex:1;background:#CE1126;"></div></div>
   </div>
   <div class="scroll-body gap-stack">
-    <div class="sec-label">Quick Access</div>
-    <div class="icon-row" onclick="goTo('voice')"><div class="ir-ico" style="background:#EAF7F0;">💊</div><div class="ir-text"><div class="ir-label">Medicines</div><div class="ir-sub">How &amp; when to take your tablets</div></div><div class="ir-arr">›</div></div>
-    <div class="icon-row" onclick="goTo('topics')"><div class="ir-ico" style="background:#FFF3E8;">🩺</div><div class="ir-text"><div class="ir-label">My Condition</div><div class="ir-sub">Understand your diagnosis</div></div><div class="ir-arr">›</div></div>
-    <div class="icon-row" onclick="goTo('topics')"><div class="ir-ico" style="background:#FFF0F0;">🤰</div><div class="ir-text"><div class="ir-label">Pregnancy &amp; Child Health</div><div class="ir-sub">Antenatal, newborn, vaccination</div></div><div class="ir-arr">›</div></div>
-    <div class="icon-row" onclick="goTo('reminders')"><div class="ir-ico" style="background:#FBF3E2;">⏰</div><div class="ir-text"><div class="ir-label">My Reminders</div><div class="ir-sub">Medicine &amp; clinic audio alerts</div></div><div class="ir-arr">›</div></div>
-    <div class="icon-row" onclick="goTo('nurse')"><div class="ir-ico" style="background:#EAF2FF;">👩🏽‍⚕️</div><div class="ir-text"><div class="ir-label">Healthcare Worker Mode</div><div class="ir-sub">CHPS nurse &amp; midwife tools</div></div><div class="ir-arr">›</div></div>
-    <div class="icon-row" onclick="goTo('feedback')"><div class="ir-ico" style="background:#F3EAF7;">⭐</div><div class="ir-text"><div class="ir-label">Give Feedback</div><div class="ir-sub">Help us improve · Pilot study</div></div><div class="ir-arr">›</div></div>
+    <div class="sec-label" data-t="quick_access_label">Quick Access</div>
+    <div class="icon-row" onclick="goTo('voice')">
+      <div class="ir-ico" style="background:#EAF7F0;">💊</div>
+      <div style="flex:1;"><div class="ir-label" data-t="nav_medicines">Medicines</div><div class="ir-sub" data-t="nav_medicines_sub">How &amp; when to take your tablets</div></div>
+      <div class="ir-arr">›</div>
+    </div>
+    <div class="icon-row" onclick="goTo('topics')">
+      <div class="ir-ico" style="background:#FFF3E8;">🩺</div>
+      <div style="flex:1;"><div class="ir-label" data-t="nav_condition">My Condition</div><div class="ir-sub" data-t="nav_condition_sub">Understand your diagnosis</div></div>
+      <div class="ir-arr">›</div>
+    </div>
+    <div class="icon-row" onclick="goTo('topics')">
+      <div class="ir-ico" style="background:#FFF0F0;">🤰</div>
+      <div style="flex:1;"><div class="ir-label" data-t="nav_pregnancy">Pregnancy &amp; Child Health</div><div class="ir-sub" data-t="nav_pregnancy_sub">Antenatal, newborn, vaccination</div></div>
+      <div class="ir-arr">›</div>
+    </div>
+    <div class="icon-row" onclick="goTo('reminders')">
+      <div class="ir-ico" style="background:#FBF3E2;">⏰</div>
+      <div style="flex:1;"><div class="ir-label" data-t="nav_reminders">My Reminders</div><div class="ir-sub" data-t="nav_reminders_sub">Medicine &amp; clinic audio alerts</div></div>
+      <div class="ir-arr">›</div>
+    </div>
+    <div class="icon-row" onclick="goTo('nurse')">
+      <div class="ir-ico" style="background:#EAF2FF;">👩🏽‍⚕️</div>
+      <div style="flex:1;"><div class="ir-label" data-t="nav_nurse">Healthcare Worker Mode</div><div class="ir-sub" data-t="nav_nurse_sub">CHPS nurse &amp; midwife tools</div></div>
+      <div class="ir-arr">›</div>
+    </div>
+    <div class="icon-row" onclick="goTo('feedback')">
+      <div class="ir-ico" style="background:#F3EAF7;">⭐</div>
+      <div style="flex:1;"><div class="ir-label" data-t="nav_feedback">Give Feedback</div><div class="ir-sub" data-t="nav_feedback_sub">Help us improve · Pilot study</div></div>
+      <div class="ir-arr">›</div>
+    </div>
   </div>
   <nav class="bottom-nav">
-    <div class="bn on" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
-    <div class="bn" onclick="goTo('voice')"><div class="bn-ico">🎤</div><div class="bn-lbl">Speak</div></div>
-    <div class="bn" onclick="goTo('topics')"><div class="bn-ico">📋</div><div class="bn-lbl">Topics</div></div>
-    <div class="bn" onclick="goTo('reminders')"><div class="bn-ico">⏰</div><div class="bn-lbl">Remind</div></div>
-    <div class="bn" onclick="goTo('nurse')"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl">Nurse</div></div>
+    <div class="bn on" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl" data-t="nav_home">Home</div></div>
+    <div class="bn" onclick="goTo('voice')"><div class="bn-ico">🎤</div><div class="bn-lbl" data-t="nav_speak">Speak</div></div>
+    <div class="bn" onclick="goTo('topics')"><div class="bn-ico">📋</div><div class="bn-lbl" data-t="nav_topics">Topics</div></div>
+    <div class="bn" onclick="goTo('reminders')"><div class="bn-ico">⏰</div><div class="bn-lbl" data-t="nav_remind">Remind</div></div>
+    <div class="bn" onclick="goTo('nurse')"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl" data-t="nav_nurse_short">Nurse</div></div>
   </nav>
 </div>
 
-<!-- ================================================ VOICE ================================================ -->
+<!-- ════════════════════════════════════════════════════════
+     SCREEN 4 — VOICE ASSISTANT
+     ════════════════════════════════════════════════════════ -->
 <div class="screen" id="screen-voice">
   <div class="app-bar">
     <button class="bar-back" onclick="goBack()">←</button>
-    <div style="padding-left:46px;"><div class="bar-title">Voice Assistant 🎤</div><div class="bar-sub">Speak in your language</div></div>
-  </div>
-  <div class="voice-body" id="voice-body">
-    <div class="lang-chips" id="voice-lang-chips">
-      <div class="lchip on" onclick="setVoiceLang(this,'twi','🌿')">🌿 Twi</div>
-      <div class="lchip" onclick="setVoiceLang(this,'ga','🌊')">🌊 Ga</div>
-      <div class="lchip" onclick="setVoiceLang(this,'ewe','🌻')">🌻 Ewe</div>
-      <div class="lchip" onclick="setVoiceLang(this,'hausa','🌙')">🌙 Hausa</div>
-      <div class="lchip" onclick="setVoiceLang(this,'english','🇬🇭')">🇬🇭 English</div>
+    <div style="padding-left:46px;">
+      <div class="bar-title" data-t="voice_title">Voice Assistant 🎤</div>
+      <div class="bar-sub" data-t="voice_sub">Speak in your language</div>
     </div>
+  </div>
+  <div class="voice-body">
     <div class="orb-wrap">
       <div class="orb-ring"></div><div class="orb-ring"></div><div class="orb-ring"></div>
       <button class="voice-orb" id="voiceOrb" onclick="toggleVoice()">🎤</button>
     </div>
-    <div class="wave-bar-wrap" id="waveBars">
-      <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
+    <div class="wave-bars" id="waveBars">
+      <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
+      <div class="wbar"></div><div class="wbar"></div><div class="wbar"></div><div class="wbar"></div>
     </div>
-    <div class="orb-status" id="orbStatus">Tap to Speak / Ka bɔ</div>
-    <div class="qq-title">Try asking:</div>
-    <button class="qq" onclick="doQuery('medicine')" style="border-left-color:#3DAA6E;">🎤 "How do I take my blood pressure medicine?"</button>
-    <button class="qq" onclick="doQuery('hypertension')" style="border-left-color:#1A6FAF;">🎤 "What is hypertension?"</button>
-    <button class="qq" onclick="doQuery('antenatal')" style="border-left-color:#C05A2A;">🎤 "Why attend antenatal clinic?"</button>
-    <button class="qq" onclick="doQuery('fever')" style="border-left-color:#D63B3B;">🎤 "My child has fever. What do I do?"</button>
-    <button class="qq" onclick="doQuery('malaria')" style="border-left-color:#8B5CF6;">🎤 "How do I prevent malaria?"</button>
+    <div class="orb-status" id="orbStatus" data-t="tap_to_speak">Tap to Speak</div>
+    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;width:100%;" data-t="try_asking">Try asking:</div>
+    <button class="qq" onclick="doQuery('medicine')" style="border-left-color:#3DAA6E;">🎤 <span data-t="q_medicine">"How do I take my medicine?"</span></button>
+    <button class="qq" onclick="doQuery('hypertension')" style="border-left-color:#1A6FAF;">🎤 <span data-t="q_hypertension">"What is hypertension?"</span></button>
+    <button class="qq" onclick="doQuery('antenatal')" style="border-left-color:#C05A2A;">🎤 <span data-t="q_antenatal">"Why attend antenatal clinic?"</span></button>
+    <button class="qq" onclick="doQuery('fever')" style="border-left-color:#D63B3B;">🎤 <span data-t="q_fever">"My child has fever. What do I do?"</span></button>
+    <button class="qq" onclick="doQuery('malaria')" style="border-left-color:#8B5CF6;">🎤 <span data-t="q_malaria">"How do I prevent malaria?"</span></button>
     <div class="resp-card" id="resp-card">
-      <div class="resp-lang-row">
-        <div class="resp-lang-badge" id="resp-lang-badge">🌿 Twi</div>
-        <button class="resp-play-btn" onclick="replayResponse()">🔊 Play</button>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:5px;background:var(--pale);border-radius:8px;padding:4px 10px;font-size:11px;font-weight:700;color:var(--green);" id="resp-lang-badge">🌿 Twi</div>
+        <button style="background:var(--green);color:white;border:none;border-radius:10px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;" onclick="replayResponse()">🔊 <span data-t="play_btn">Play</span></button>
       </div>
       <div class="resp-native" id="resp-native"></div>
       <ul class="resp-steps" id="resp-steps"></ul>
@@ -421,112 +423,135 @@ body{font-family:var(--font-b);background:var(--cream);color:var(--charcoal);}
     </div>
   </div>
   <nav class="bottom-nav">
-    <div class="bn" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
-    <div class="bn on"><div class="bn-ico">🎤</div><div class="bn-lbl">Speak</div></div>
-    <div class="bn" onclick="goTo('topics')"><div class="bn-ico">📋</div><div class="bn-lbl">Topics</div></div>
-    <div class="bn" onclick="goTo('reminders')"><div class="bn-ico">⏰</div><div class="bn-lbl">Remind</div></div>
-    <div class="bn" onclick="goTo('nurse')"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl">Nurse</div></div>
+    <div class="bn" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl" data-t="nav_home">Home</div></div>
+    <div class="bn on"><div class="bn-ico">🎤</div><div class="bn-lbl" data-t="nav_speak">Speak</div></div>
+    <div class="bn" onclick="goTo('topics')"><div class="bn-ico">📋</div><div class="bn-lbl" data-t="nav_topics">Topics</div></div>
+    <div class="bn" onclick="goTo('reminders')"><div class="bn-ico">⏰</div><div class="bn-lbl" data-t="nav_remind">Remind</div></div>
+    <div class="bn" onclick="goTo('nurse')"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl" data-t="nav_nurse_short">Nurse</div></div>
   </nav>
 </div>
 
-<!-- ================================================ TOPICS ================================================ -->
+<!-- ════════════════════════════════════════════════════════
+     SCREEN 5 — HEALTH TOPICS
+     ════════════════════════════════════════════════════════ -->
 <div class="screen" id="screen-topics">
   <div class="app-bar">
     <button class="bar-back" onclick="goBack()">←</button>
-    <div style="padding-left:46px;"><div class="bar-title">Health Topics 📋</div><div class="bar-sub">Tap any topic to listen</div></div>
+    <div style="padding-left:46px;">
+      <div class="bar-title" data-t="topics_title">Health Topics 📋</div>
+      <div class="bar-sub" data-t="topics_sub">Tap any topic to listen</div>
+    </div>
   </div>
   <div class="scroll-body">
     <div class="topic-grid">
-      <div class="topic-card" onclick="showTopic('hypertension')"><span class="tc-ico">❤️</span><div class="tc-lbl">High Blood Pressure</div><div class="tc-sub">Hypertension</div></div>
-      <div class="topic-card" onclick="showTopic('diabetes')"><span class="tc-ico">🩸</span><div class="tc-lbl">Diabetes</div><div class="tc-sub">Sugar Sickness</div></div>
-      <div class="topic-card" onclick="showTopic('malaria')"><span class="tc-ico">🦟</span><div class="tc-lbl">Malaria</div><div class="tc-sub">Asra</div></div>
-      <div class="topic-card" onclick="showTopic('pregnancy')"><span class="tc-ico">🤰</span><div class="tc-lbl">Pregnancy Care</div><div class="tc-sub">Antenatal</div></div>
-      <div class="topic-card" onclick="showTopic('childhealth')"><span class="tc-ico">👶</span><div class="tc-lbl">Child Health</div><div class="tc-sub">Vaccination</div></div>
-      <div class="topic-card" onclick="showTopic('tb')"><span class="tc-ico">🫁</span><div class="tc-lbl">Tuberculosis</div><div class="tc-sub">TB</div></div>
-      <div class="topic-card" onclick="showTopic('nutrition')"><span class="tc-ico">🥗</span><div class="tc-lbl">Healthy Eating</div><div class="tc-sub">Aduane Pa</div></div>
-      <div class="topic-card" onclick="showTopic('medication')"><span class="tc-ico">💊</span><div class="tc-lbl">Taking Medicines</div><div class="tc-sub">Nnuro</div></div>
+      <div class="topic-card" onclick="showTopic('hypertension')"><span class="tc-ico">❤️</span><div class="tc-lbl" data-t="topic_hypertension">High Blood Pressure</div><div class="tc-sub">Hypertension</div></div>
+      <div class="topic-card" onclick="showTopic('diabetes')"><span class="tc-ico">🩸</span><div class="tc-lbl" data-t="topic_diabetes">Diabetes</div><div class="tc-sub" data-t="topic_diabetes_sub">Sugar Sickness</div></div>
+      <div class="topic-card" onclick="showTopic('malaria')"><span class="tc-ico">🦟</span><div class="tc-lbl" data-t="topic_malaria">Malaria</div><div class="tc-sub" data-t="topic_malaria_sub">Asra</div></div>
+      <div class="topic-card" onclick="showTopic('pregnancy')"><span class="tc-ico">🤰</span><div class="tc-lbl" data-t="topic_pregnancy">Pregnancy Care</div><div class="tc-sub" data-t="topic_pregnancy_sub">Antenatal</div></div>
+      <div class="topic-card" onclick="showTopic('childhealth')"><span class="tc-ico">👶</span><div class="tc-lbl" data-t="topic_child">Child Health</div><div class="tc-sub" data-t="topic_child_sub">Vaccination</div></div>
+      <div class="topic-card" onclick="showTopic('tb')"><span class="tc-ico">🫁</span><div class="tc-lbl" data-t="topic_tb">Tuberculosis</div><div class="tc-sub">TB</div></div>
+      <div class="topic-card" onclick="showTopic('nutrition')"><span class="tc-ico">🥗</span><div class="tc-lbl" data-t="topic_nutrition">Healthy Eating</div><div class="tc-sub" data-t="topic_nutrition_sub">Aduane Pa</div></div>
+      <div class="topic-card" onclick="showTopic('medication')"><span class="tc-ico">💊</span><div class="tc-lbl" data-t="topic_medication">Taking Medicines</div><div class="tc-sub" data-t="topic_medication_sub">Nnuro</div></div>
     </div>
   </div>
   <nav class="bottom-nav">
-    <div class="bn" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
-    <div class="bn" onclick="goTo('voice')"><div class="bn-ico">🎤</div><div class="bn-lbl">Speak</div></div>
-    <div class="bn on"><div class="bn-ico">📋</div><div class="bn-lbl">Topics</div></div>
-    <div class="bn" onclick="goTo('reminders')"><div class="bn-ico">⏰</div><div class="bn-lbl">Remind</div></div>
-    <div class="bn" onclick="goTo('nurse')"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl">Nurse</div></div>
+    <div class="bn" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl" data-t="nav_home">Home</div></div>
+    <div class="bn" onclick="goTo('voice')"><div class="bn-ico">🎤</div><div class="bn-lbl" data-t="nav_speak">Speak</div></div>
+    <div class="bn on"><div class="bn-ico">📋</div><div class="bn-lbl" data-t="nav_topics">Topics</div></div>
+    <div class="bn" onclick="goTo('reminders')"><div class="bn-ico">⏰</div><div class="bn-lbl" data-t="nav_remind">Remind</div></div>
+    <div class="bn" onclick="goTo('nurse')"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl" data-t="nav_nurse_short">Nurse</div></div>
   </nav>
 </div>
 
-<!-- ================================================ REMINDERS ================================================ -->
+<!-- ════════════════════════════════════════════════════════
+     SCREEN 6 — REMINDERS
+     ════════════════════════════════════════════════════════ -->
 <div class="screen" id="screen-reminders">
   <div class="app-bar">
     <button class="bar-back" onclick="goBack()">←</button>
-    <div style="padding-left:46px;"><div class="bar-title">My Reminders ⏰</div><div class="bar-sub">Spoken alerts in your language</div></div>
+    <div style="padding-left:46px;">
+      <div class="bar-title" data-t="reminders_title">My Reminders ⏰</div>
+      <div class="bar-sub" data-t="reminders_sub">Spoken alerts in your language</div>
+    </div>
   </div>
   <div class="scroll-body gap-stack">
-    <div id="notif-perm-card" class="notif-card" style="display:none;">
+    <div id="notif-perm-card" style="display:none;background:linear-gradient(135deg,#FBF3E2,#FFF8EE);border:2px solid var(--amber);border-radius:var(--r);padding:16px;gap:12px;align-items:flex-start;">
       <div style="font-size:28px;">🔔</div>
       <div>
-        <div style="font-family:var(--font-h);font-size:15px;font-weight:800;">Enable Notifications</div>
-        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;">Allow notifications so reminders fire on time.</div>
-        <button class="btn-primary" style="margin-top:10px;font-size:13px;padding:10px;" onclick="requestNotifPermission()">Allow Notifications</button>
+        <div style="font-family:var(--font-h);font-size:15px;font-weight:800;" data-t="notif_title">Enable Notifications</div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:3px;" data-t="notif_sub">Allow notifications so your reminders fire on time.</div>
+        <button class="btn-primary" style="margin-top:10px;font-size:13px;padding:10px;" onclick="requestNotifPermission()" data-t="notif_btn">Allow Notifications</button>
       </div>
     </div>
     <div style="background:linear-gradient(135deg,var(--forest),var(--green));border-radius:var(--r);padding:16px;display:flex;align-items:center;gap:14px;">
       <div style="width:52px;height:52px;border-radius:14px;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:26px;">🔊</div>
-      <div><div style="font-family:var(--font-h);font-size:17px;font-weight:800;color:white;">Audio Reminders Active</div><div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:3px;">Works offline · Speaks in your language</div></div>
+      <div>
+        <div style="font-family:var(--font-h);font-size:17px;font-weight:800;color:white;" data-t="reminders_active">Audio Reminders Active</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:3px;" data-t="reminders_active_sub">Works offline · Speaks in your language</div>
+      </div>
     </div>
-    <div class="sec-label">Your Medicines</div>
+    <div class="sec-label" data-t="your_medicines">Your Medicines</div>
     <div class="gap-stack" id="reminders-list"></div>
-    <button class="btn-primary" onclick="openAddReminder()">➕ &nbsp;Add Reminder</button>
-    <button class="btn-secondary" onclick="testReminderNow()">🔊 &nbsp;Test Audio Reminder Now</button>
+    <button class="btn-primary" onclick="openAddReminder()">➕ &nbsp;<span data-t="add_reminder">Add Reminder</span></button>
+    <button class="btn-secondary" onclick="testReminderNow()">🔊 &nbsp;<span data-t="test_reminder">Test Audio Reminder Now</span></button>
   </div>
   <nav class="bottom-nav">
-    <div class="bn" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
-    <div class="bn" onclick="goTo('voice')"><div class="bn-ico">🎤</div><div class="bn-lbl">Speak</div></div>
-    <div class="bn" onclick="goTo('topics')"><div class="bn-ico">📋</div><div class="bn-lbl">Topics</div></div>
-    <div class="bn on"><div class="bn-ico">⏰</div><div class="bn-lbl">Remind</div></div>
-    <div class="bn" onclick="goTo('nurse')"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl">Nurse</div></div>
+    <div class="bn" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl" data-t="nav_home">Home</div></div>
+    <div class="bn" onclick="goTo('voice')"><div class="bn-ico">🎤</div><div class="bn-lbl" data-t="nav_speak">Speak</div></div>
+    <div class="bn" onclick="goTo('topics')"><div class="bn-ico">📋</div><div class="bn-lbl" data-t="nav_topics">Topics</div></div>
+    <div class="bn on"><div class="bn-ico">⏰</div><div class="bn-lbl" data-t="nav_remind">Remind</div></div>
+    <div class="bn" onclick="goTo('nurse')"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl" data-t="nav_nurse_short">Nurse</div></div>
   </nav>
 </div>
 
-<!-- ================================================ NURSE ================================================ -->
+<!-- ════════════════════════════════════════════════════════
+     SCREEN 7 — NURSE MODE
+     ════════════════════════════════════════════════════════ -->
 <div class="screen" id="screen-nurse">
   <div class="nurse-header">
     <button class="bar-back" onclick="goBack()" style="background:rgba(255,255,255,.15);">←</button>
-    <div style="padding-left:46px;"><div class="bar-title" style="color:white;">CHPS Nurse Mode 👩🏽‍⚕️</div><div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:3px;">Patient Education Tools</div></div>
+    <div style="padding-left:46px;">
+      <div style="font-family:var(--font-h);font-size:22px;font-weight:800;color:white;" data-t="nurse_title">CHPS Nurse Mode 👩🏽‍⚕️</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:3px;" data-t="nurse_sub">Patient Education Tools</div>
+    </div>
   </div>
   <div class="scroll-body gap-stack">
-    <div class="sec-label">Current Patient</div>
+    <div class="sec-label" data-t="current_patient">Current Patient</div>
     <div class="patient-card">
       <div class="pt-avatar">👩</div>
-      <div>
-        <div class="pt-name" id="nurse-patient-name">Select Patient</div>
-        <div class="pt-info" id="nurse-patient-info">Tap to add patient details</div>
-        <div class="pt-tags" id="nurse-patient-tags"></div>
+      <div style="flex:1;">
+        <div style="font-family:var(--font-h);font-size:16px;font-weight:800;" id="nurse-pt-name" data-t="select_patient">Select Patient</div>
+        <div style="font-size:12px;color:var(--muted);font-weight:600;margin-top:2px;" id="nurse-pt-info" data-t="tap_to_add">Tap to add patient details</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;" id="nurse-pt-tags"></div>
       </div>
-      <button onclick="openPatientModal()" style="margin-left:auto;background:var(--pale);border:1.5px solid var(--border);border-radius:10px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--green);">Edit</button>
+      <button onclick="openPatientModal()" style="background:var(--pale);border:1.5px solid var(--border);border-radius:10px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;color:var(--green);" data-t="edit_btn">Edit</button>
     </div>
-    <div class="sec-label">Play for Patient</div>
+    <div class="sec-label" data-t="play_for_patient">Play for Patient</div>
     <div class="gap-stack" id="scripts-list"></div>
   </div>
   <nav class="bottom-nav">
-    <div class="bn" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl">Home</div></div>
-    <div class="bn" onclick="goTo('voice')"><div class="bn-ico">🎤</div><div class="bn-lbl">Speak</div></div>
-    <div class="bn" onclick="goTo('topics')"><div class="bn-ico">📋</div><div class="bn-lbl">Topics</div></div>
-    <div class="bn" onclick="goTo('reminders')"><div class="bn-ico">⏰</div><div class="bn-lbl">Remind</div></div>
-    <div class="bn on"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl">Nurse</div></div>
+    <div class="bn" onclick="goTo('home')"><div class="bn-ico">🏠</div><div class="bn-lbl" data-t="nav_home">Home</div></div>
+    <div class="bn" onclick="goTo('voice')"><div class="bn-ico">🎤</div><div class="bn-lbl" data-t="nav_speak">Speak</div></div>
+    <div class="bn" onclick="goTo('topics')"><div class="bn-ico">📋</div><div class="bn-lbl" data-t="nav_topics">Topics</div></div>
+    <div class="bn" onclick="goTo('reminders')"><div class="bn-ico">⏰</div><div class="bn-lbl" data-t="nav_remind">Remind</div></div>
+    <div class="bn on"><div class="bn-ico">👩🏽‍⚕️</div><div class="bn-lbl" data-t="nav_nurse_short">Nurse</div></div>
   </nav>
 </div>
 
-<!-- ================================================ FEEDBACK ================================================ -->
+<!-- ════════════════════════════════════════════════════════
+     SCREEN 8 — FEEDBACK
+     ════════════════════════════════════════════════════════ -->
 <div class="screen" id="screen-feedback">
   <div class="app-bar">
     <button class="bar-back" onclick="goBack()">←</button>
-    <div style="padding-left:46px;"><div class="bar-title">Your Feedback ⭐</div><div class="bar-sub">Help improve HealthVoice GH</div></div>
+    <div style="padding-left:46px;">
+      <div class="bar-title" data-t="feedback_title">Your Feedback ⭐</div>
+      <div class="bar-sub" data-t="feedback_sub">Help improve HealthVoice GH</div>
+    </div>
   </div>
   <div class="scroll-body gap-stack">
     <div class="card" style="padding:18px;">
-      <div class="feedback-q">How easy was the app to use?</div>
+      <div style="font-family:var(--font-h);font-size:16px;font-weight:700;margin-bottom:8px;" data-t="q_ease">How easy was the app to use?</div>
       <div class="star-row" id="stars-ease">
         <span class="star" onclick="rateStar('ease',1)">⭐</span><span class="star" onclick="rateStar('ease',2)">⭐</span>
         <span class="star" onclick="rateStar('ease',3)">⭐</span><span class="star" onclick="rateStar('ease',4)">⭐</span>
@@ -534,7 +559,7 @@ body{font-family:var(--font-b);background:var(--cream);color:var(--charcoal);}
       </div>
     </div>
     <div class="card" style="padding:18px;">
-      <div class="feedback-q">Was the health information helpful?</div>
+      <div style="font-family:var(--font-h);font-size:16px;font-weight:700;margin-bottom:8px;" data-t="q_helpful">Was the health information helpful?</div>
       <div class="star-row" id="stars-helpful">
         <span class="star" onclick="rateStar('helpful',1)">⭐</span><span class="star" onclick="rateStar('helpful',2)">⭐</span>
         <span class="star" onclick="rateStar('helpful',3)">⭐</span><span class="star" onclick="rateStar('helpful',4)">⭐</span>
@@ -542,76 +567,67 @@ body{font-family:var(--font-b);background:var(--cream);color:var(--charcoal);}
       </div>
     </div>
     <div class="card" style="padding:18px;">
-      <div class="feedback-q">Was the audio clear enough?</div>
+      <div style="font-family:var(--font-h);font-size:16px;font-weight:700;margin-bottom:8px;" data-t="q_audio">Was the audio clear enough?</div>
       <div class="likert" id="q-audio">
-        <div class="likert-opt" onclick="pickLikert('audio','yes',this)">✅ Yes, clear</div>
-        <div class="likert-opt" onclick="pickLikert('audio','mostly',this)">👍 Mostly</div>
-        <div class="likert-opt" onclick="pickLikert('audio','sometimes',this)">🤔 Sometimes</div>
-        <div class="likert-opt" onclick="pickLikert('audio','no',this)">❌ Not clear</div>
+        <div class="likert-opt" onclick="pickLikert('audio','yes',this)" data-t="audio_yes">✅ Yes, clear</div>
+        <div class="likert-opt" onclick="pickLikert('audio','mostly',this)" data-t="audio_mostly">👍 Mostly</div>
+        <div class="likert-opt" onclick="pickLikert('audio','sometimes',this)" data-t="audio_sometimes">🤔 Sometimes</div>
+        <div class="likert-opt" onclick="pickLikert('audio','no',this)" data-t="audio_no">❌ Not clear</div>
       </div>
     </div>
     <div class="card" style="padding:18px;">
-      <div class="feedback-q">Would you recommend this app?</div>
+      <div style="font-family:var(--font-h);font-size:16px;font-weight:700;margin-bottom:8px;" data-t="q_recommend">Would you recommend this app?</div>
       <div class="likert" id="q-recommend">
-        <div class="likert-opt" onclick="pickLikert('recommend','yes',this)">✅ Definitely</div>
-        <div class="likert-opt" onclick="pickLikert('recommend','maybe',this)">🤔 Maybe</div>
-        <div class="likert-opt" onclick="pickLikert('recommend','no',this)">❌ No</div>
+        <div class="likert-opt" onclick="pickLikert('recommend','yes',this)" data-t="rec_yes">✅ Definitely</div>
+        <div class="likert-opt" onclick="pickLikert('recommend','maybe',this)" data-t="rec_maybe">🤔 Maybe</div>
+        <div class="likert-opt" onclick="pickLikert('recommend','no',this)" data-t="rec_no">❌ No</div>
       </div>
     </div>
     <div class="card" style="padding:18px;">
-      <div class="feedback-q">What language did you use today?</div>
-      <div class="likert" id="q-lang-used">
-        <div class="likert-opt" onclick="pickLikert('langUsed','twi',this)">🌿 Twi</div>
-        <div class="likert-opt" onclick="pickLikert('langUsed','ga',this)">🌊 Ga</div>
-        <div class="likert-opt" onclick="pickLikert('langUsed','ewe',this)">🌻 Ewe</div>
-        <div class="likert-opt" onclick="pickLikert('langUsed','hausa',this)">🌙 Hausa</div>
-      </div>
+      <div style="font-family:var(--font-h);font-size:16px;font-weight:700;margin-bottom:8px;" data-t="q_comments">Any other comments? (Optional)</div>
+      <textarea class="feedback-text" id="feedback-comments" data-t-placeholder="comments_placeholder"></textarea>
     </div>
-    <div class="card" style="padding:18px;">
-      <div class="feedback-q">Any other comments? (Optional)</div>
-      <textarea class="feedback-text" id="feedback-comments" placeholder="Write your thoughts here..."></textarea>
-    </div>
-    <button class="btn-primary" onclick="submitFeedback()">✓ &nbsp;Submit Feedback</button>
-    <button class="btn-secondary" onclick="goTo('home')" style="margin-bottom:20px;">Skip for now</button>
+    <button class="btn-primary" onclick="submitFeedback()">✓ &nbsp;<span data-t="submit_feedback">Submit Feedback</span></button>
+    <button class="btn-secondary" onclick="goTo('home')" style="margin-bottom:20px;" data-t="skip_btn">Skip for now</button>
   </div>
 </div>
 
-<!-- TOPIC SHEET -->
+<!-- ════════════ TOPIC SHEET ════════════ -->
 <div class="sheet-backdrop" id="sheet-backdrop" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="bottom-sheet">
   <div class="sheet-handle"></div>
   <div class="sheet-title" id="sheet-title"></div>
   <div id="sheet-content"></div>
   <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px;">
-    <button class="btn-primary" onclick="speakSheetContent()">🔊 &nbsp;Listen in <span id="sheet-lang-name">Twi</span></button>
-    <button class="btn-secondary" onclick="closeSheet()">Close</button>
+    <button class="btn-primary" onclick="speakSheetContent()" id="sheet-speak-btn">🔊 &nbsp;<span data-t="listen_btn">Listen</span></button>
+    <button class="btn-secondary" onclick="closeSheet()" data-t="close_btn">Close</button>
   </div>
 </div>
 
-<!-- ADD REMINDER MODAL -->
+<!-- ════════════ ADD REMINDER MODAL ════════════ -->
 <div class="modal" id="add-reminder-modal">
   <div class="modal-box">
-    <div class="modal-title">➕ Add Medicine Reminder</div>
-    <div class="form-group"><label class="form-label">Medicine Name</label><input class="form-input" id="rem-name" placeholder="e.g. Amlodipine 5mg"/></div>
-    <div class="form-group"><label class="form-label">Reminder Time</label><input class="form-input" type="time" id="rem-time" value="07:00"/></div>
+    <div class="modal-title" data-t="add_reminder_title">➕ Add Medicine Reminder</div>
+    <div class="form-group"><label class="form-label" data-t="medicine_name_label">Medicine Name</label><input class="form-input" id="rem-name" data-t-placeholder="medicine_name_placeholder"/></div>
+    <div class="form-group"><label class="form-label" data-t="time_label">Reminder Time</label><input class="form-input" type="time" id="rem-time" value="07:00"/></div>
     <div class="form-row">
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Dose</label><input class="form-input" id="rem-dose" placeholder="1 tablet"/></div>
-      <div class="form-group" style="margin-bottom:0;"><label class="form-label">Instruction</label><input class="form-input" id="rem-note" placeholder="After food"/></div>
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label" data-t="dose_label">Dose</label><input class="form-input" id="rem-dose" data-t-placeholder="dose_placeholder"/></div>
+      <div class="form-group" style="margin-bottom:0;"><label class="form-label" data-t="instruction_label">Instruction</label><input class="form-input" id="rem-note" data-t-placeholder="instruction_placeholder"/></div>
     </div>
     <div style="display:flex;gap:10px;margin-top:18px;">
-      <button class="btn-primary" style="flex:1;" onclick="saveReminder()">✓ Save</button>
-      <button class="btn-secondary" style="width:80px;" onclick="closeAddReminder()">Cancel</button>
+      <button class="btn-primary" style="flex:1;" onclick="saveReminder()" data-t="save_btn">✓ Save</button>
+      <button class="btn-secondary" style="width:80px;" onclick="closeAddReminder()" data-t="cancel_btn">Cancel</button>
     </div>
   </div>
 </div>
 
-<!-- PATIENT MODAL -->
+<!-- ════════════ PATIENT MODAL ════════════ -->
 <div class="modal" id="patient-modal">
   <div class="modal-box">
-    <div class="modal-title">👩 Patient Details</div>
-    <div class="form-group"><label class="form-label">Patient Name</label><input class="form-input" id="pt-name-input" placeholder="e.g. Ama Owusu"/></div>
-    <div class="form-group"><label class="form-label">Age &amp; Condition</label><input class="form-input" id="pt-info-input" placeholder="e.g. 34 yrs · Hypertension"/></div>
-    <div class="form-group"><label class="form-label">Language</label>
+    <div class="modal-title" data-t="patient_details_title">👩 Patient Details</div>
+    <div class="form-group"><label class="form-label" data-t="patient_name_label">Patient Name</label><input class="form-input" id="pt-name-input" placeholder="e.g. Ama Owusu"/></div>
+    <div class="form-group"><label class="form-label" data-t="age_condition_label">Age &amp; Condition</label><input class="form-input" id="pt-info-input" placeholder="e.g. 34 yrs · Hypertension"/></div>
+    <div class="form-group"><label class="form-label" data-t="language_label">Language</label>
       <select class="form-input" id="pt-lang-input">
         <option value="twi">🌿 Twi</option><option value="ga">🌊 Ga</option>
         <option value="ewe">🌻 Ewe</option><option value="hausa">🌙 Hausa</option>
@@ -619,204 +635,649 @@ body{font-family:var(--font-b);background:var(--cream);color:var(--charcoal);}
       </select>
     </div>
     <div style="display:flex;gap:10px;margin-top:18px;">
-      <button class="btn-primary" style="flex:1;" onclick="savePatient()">✓ Save</button>
-      <button class="btn-secondary" style="width:80px;" onclick="closePatientModal()">Cancel</button>
+      <button class="btn-primary" style="flex:1;" onclick="savePatient()" data-t="save_btn">✓ Save</button>
+      <button class="btn-secondary" style="width:80px;" onclick="closePatientModal()" data-t="cancel_btn">Cancel</button>
     </div>
   </div>
 </div>
 
 <div id="toast"></div>
-</div>
+</div><!-- /app -->
 
-<!-- Firebase SDK -->
+<!-- ════════════════════════════════════════════
+     FIREBASE SDK
+     ════════════════════════════════════════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getFirestore, collection, addDoc, doc, setDoc, serverTimestamp, enableIndexedDbPersistence }
+import { getFirestore, collection, addDoc, serverTimestamp, enableIndexedDbPersistence }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-window._fbReady = false;
-window._db = null;
-
-if (typeof FIREBASE_ENABLED !== 'undefined' && FIREBASE_ENABLED && FIREBASE_CONFIG.apiKey !== 'PASTE_YOUR_API_KEY_HERE') {
+window._fbReady = false; window._db = null;
+if (typeof FIREBASE_ENABLED!=='undefined' && FIREBASE_ENABLED && FIREBASE_CONFIG.apiKey!=='PASTE_YOUR_API_KEY_HERE') {
   try {
     const app = initializeApp(FIREBASE_CONFIG);
     const db = getFirestore(app);
-    // Enable offline persistence
-    enableIndexedDbPersistence(db).catch(() => {});
-    window._db = db;
-    window._fbReady = true;
-    window._fbModules = { collection, addDoc, doc, setDoc, serverTimestamp };
-    console.log('✅ Firebase connected');
-  } catch(e) {
-    console.warn('Firebase init failed:', e.message);
-  }
+    enableIndexedDbPersistence(db).catch(()=>{});
+    window._db = db; window._fbReady = true;
+    window._fbM = { collection, addDoc, serverTimestamp };
+    document.getElementById('sync-dot').style.background='#5EE89B';
+    document.getElementById('sync-lbl').textContent='Synced ✓';
+  } catch(e){ console.warn('Firebase:',e.message); }
 }
 </script>
 
+<!-- ════════════════════════════════════════════
+     TRANSLATION SYSTEM
+     ════════════════════════════════════════════ -->
 <script>
-// ============================================================
-// HEALTH CONTENT DATA
-// ============================================================
+// ─────────────────────────────────────────────
+// TRANSLATIONS
+// Every [TRANSLATE] marker = needs a native speaker
+// Format: T[lang][key] = "text"
+// ─────────────────────────────────────────────
+const T = {
+  english: {
+    // Navigation
+    nav_home:"Home", nav_speak:"Speak", nav_topics:"Topics",
+    nav_remind:"Remind", nav_nurse_short:"Nurse",
+    // Home screen
+    welcome_greeting:"Akwaaba! Welcome,",
+    home_question:"What do you need help with?",
+    tap_speak:"Tap & Speak",
+    ask_question:"Ask any health question in your language",
+    quick_access_label:"Quick Access",
+    nav_medicines:"Medicines", nav_medicines_sub:"How & when to take your tablets",
+    nav_condition:"My Condition", nav_condition_sub:"Understand your diagnosis",
+    nav_pregnancy:"Pregnancy & Child Health", nav_pregnancy_sub:"Antenatal, newborn, vaccination",
+    nav_reminders:"My Reminders", nav_reminders_sub:"Medicine & clinic audio alerts",
+    nav_nurse:"Healthcare Worker Mode", nav_nurse_sub:"CHPS nurse & midwife tools",
+    nav_feedback:"Give Feedback", nav_feedback_sub:"Help us improve · Pilot study",
+    // Voice screen
+    voice_title:"Voice Assistant 🎤", voice_sub:"Speak in your language",
+    tap_to_speak:"Tap to Speak", try_asking:"Try asking:",
+    q_medicine:'"How do I take my medicine?"',
+    q_hypertension:'"What is hypertension?"',
+    q_antenatal:'"Why attend antenatal clinic?"',
+    q_fever:'"My child has fever. What do I do?"',
+    q_malaria:'"How do I prevent malaria?"',
+    play_btn:"Play", listening_msg:"Listening…", processing_msg:"Processing…", playing_msg:"Playing response…",
+    // Topics
+    topics_title:"Health Topics 📋", topics_sub:"Tap any topic to listen",
+    topic_hypertension:"High Blood Pressure", topic_diabetes:"Diabetes", topic_diabetes_sub:"Sugar Sickness",
+    topic_malaria:"Malaria", topic_malaria_sub:"Asra", topic_pregnancy:"Pregnancy Care",
+    topic_pregnancy_sub:"Antenatal", topic_child:"Child Health", topic_child_sub:"Vaccination",
+    topic_tb:"Tuberculosis", topic_nutrition:"Healthy Eating", topic_nutrition_sub:"Aduane Pa",
+    topic_medication:"Taking Medicines", topic_medication_sub:"Nnuro",
+    listen_btn:"Listen", close_btn:"Close",
+    // Reminders
+    reminders_title:"My Reminders ⏰", reminders_sub:"Spoken alerts in your language",
+    notif_title:"Enable Notifications", notif_sub:"Allow notifications so reminders fire on time.",
+    notif_btn:"Allow Notifications",
+    reminders_active:"Audio Reminders Active", reminders_active_sub:"Works offline · Speaks in your language",
+    your_medicines:"Your Medicines",
+    add_reminder:"Add Reminder", test_reminder:"Test Audio Reminder Now",
+    add_reminder_title:"➕ Add Medicine Reminder",
+    medicine_name_label:"Medicine Name", medicine_name_placeholder:"e.g. Amlodipine 5mg",
+    time_label:"Reminder Time", dose_label:"Dose", dose_placeholder:"1 tablet",
+    instruction_label:"Instruction", instruction_placeholder:"After food",
+    no_reminders:"No reminders yet", no_reminders_sub:"Add your first medicine reminder below",
+    // Nurse
+    nurse_title:"CHPS Nurse Mode 👩🏽‍⚕️", nurse_sub:"Patient Education Tools",
+    current_patient:"Current Patient", select_patient:"Select Patient",
+    tap_to_add:"Tap to add patient details", edit_btn:"Edit", play_for_patient:"Play for Patient",
+    patient_details_title:"👩 Patient Details",
+    patient_name_label:"Patient Name", age_condition_label:"Age & Condition", language_label:"Language",
+    // Feedback
+    feedback_title:"Your Feedback ⭐", feedback_sub:"Help improve HealthVoice GH",
+    q_ease:"How easy was the app to use?",
+    q_helpful:"Was the health information helpful?",
+    q_audio:"Was the audio clear enough?",
+    q_recommend:"Would you recommend this app?",
+    q_comments:"Any other comments? (Optional)",
+    audio_yes:"✅ Yes, clear", audio_mostly:"👍 Mostly",
+    audio_sometimes:"🤔 Sometimes", audio_no:"❌ Not clear",
+    rec_yes:"✅ Definitely", rec_maybe:"🤔 Maybe", rec_no:"❌ No",
+    submit_feedback:"Submit Feedback", skip_btn:"Skip for now",
+    comments_placeholder:"Write your thoughts here…",
+    // General
+    save_btn:"✓ Save", cancel_btn:"Cancel", continue:"Continue",
+    // Reminder spoken messages
+    reminder_spoken:"It is time to take your {name}. {dose}.",
+    // Screen narration (maps to audio files)
+    narr_language:"Please choose your language. Tap a flag to hear a preview.",
+    narr_home:"Welcome. What do you need help with today? Tap the microphone to speak.",
+    narr_voice:"Tap the circle and speak your health question.",
+    narr_topics:"Choose a health topic to learn more.",
+    narr_reminders:"Set medicine reminders here. The app will remind you by voice at your chosen time.",
+    narr_nurse:"Healthcare worker mode. Select a patient and play an education script.",
+    narr_feedback:"Please share your feedback. Your ratings help us improve.",
+  },
+
+  twi: {
+    // Navigation
+    nav_home:"Fie", nav_speak:"Ka Bɔ", nav_topics:"Nsɛm",
+    nav_remind:"Kae Me", nav_nurse_short:"Nɔhwɛfoɔ",
+    // Home screen
+    welcome_greeting:"Akwaaba!",
+    home_question:"Dɛn na wo hia mmoa?",
+    tap_speak:"Bɔ Ka",
+    ask_question:"Bisɛ wo yare ho asɛm wɔ wo kasa mu",
+    quick_access_label:"[TRANSLATE: Quick Access]",
+    nav_medicines:"Nnuro", nav_medicines_sub:"[TRANSLATE: How & when to take your tablets]",
+    nav_condition:"Me Yareɛ", nav_condition_sub:"[TRANSLATE: Understand your diagnosis]",
+    nav_pregnancy:"Abↄden & Mma Ho", nav_pregnancy_sub:"[TRANSLATE: Antenatal, newborn, vaccination]",
+    nav_reminders:"Ka Me Ho", nav_reminders_sub:"[TRANSLATE: Medicine & clinic audio alerts]",
+    nav_nurse:"Nnurɔhwɛfoɔ Kwan", nav_nurse_sub:"[TRANSLATE: CHPS nurse & midwife tools]",
+    nav_feedback:"Wo Adwene", nav_feedback_sub:"[TRANSLATE: Help us improve · Pilot study]",
+    // Voice
+    voice_title:"Kasa Bo 🎤", voice_sub:"Ka wɔ wo kasa mu",
+    tap_to_speak:"Bɔ Ka / Tap to Speak", try_asking:"Bisɛ:",
+    q_medicine:'"Ɛhwan na mede nnuro no?"',
+    q_hypertension:'"Hypertension yɛ dɛn?"',
+    q_antenatal:'"Adɛn nti na mekɔ abↄden?"',
+    q_fever:'"Me ba ho hyɛ. Mɛyɛ dɛn?"',
+    q_malaria:'"Ɛhwan na mede mekwae malaria?"',
+    play_btn:"Hu", listening_msg:"Mete wo so…", processing_msg:"Hwɛ mu…", playing_msg:"Ka mu…",
+    // Topics
+    topics_title:"Yare Ho Nsɛm 📋", topics_sub:"Bɔ biara na tia",
+    topic_hypertension:"Mogya Kwan Mu Tumi", topic_diabetes:"Sukla Yareɛ", topic_diabetes_sub:"Sukla Yareɛ",
+    topic_malaria:"Asra", topic_malaria_sub:"Asra",
+    topic_pregnancy:"Abↄden Hwɛ", topic_pregnancy_sub:"Antenatal",
+    topic_child:"Mma Ho", topic_child_sub:"Ntabↄ",
+    topic_tb:"TB Yareɛ", topic_nutrition:"Aduane Pa", topic_nutrition_sub:"Aduane Pa",
+    topic_medication:"Nnuro Nom", topic_medication_sub:"Nnuro",
+    listen_btn:"Tie", close_btn:"Tie Mu",
+    // Reminders
+    reminders_title:"Ka Me Ho ⏰", reminders_sub:"[TRANSLATE: Spoken alerts in your language]",
+    notif_title:"[TRANSLATE: Enable Notifications]", notif_sub:"[TRANSLATE: Allow notifications so reminders fire on time.]",
+    notif_btn:"[TRANSLATE: Allow Notifications]",
+    reminders_active:"[TRANSLATE: Audio Reminders Active]", reminders_active_sub:"[TRANSLATE: Works offline · Speaks in your language]",
+    your_medicines:"Wo Nnuro",
+    add_reminder:"Fa Nnuro Ka Ho", test_reminder:"[TRANSLATE: Test Audio Reminder Now]",
+    add_reminder_title:"➕ [TRANSLATE: Add Medicine Reminder]",
+    medicine_name_label:"Nnuro Din", medicine_name_placeholder:"[TRANSLATE: e.g. Amlodipine 5mg]",
+    time_label:"[TRANSLATE: Reminder Time]", dose_label:"[TRANSLATE: Dose]", dose_placeholder:"[TRANSLATE: 1 tablet]",
+    instruction_label:"[TRANSLATE: Instruction]", instruction_placeholder:"[TRANSLATE: After food]",
+    no_reminders:"[TRANSLATE: No reminders yet]", no_reminders_sub:"[TRANSLATE: Add your first medicine reminder below]",
+    // Nurse
+    nurse_title:"Nnurɔhwɛfoɔ Kwan 👩🏽‍⚕️", nurse_sub:"[TRANSLATE: Patient Education Tools]",
+    current_patient:"[TRANSLATE: Current Patient]", select_patient:"[TRANSLATE: Select Patient]",
+    tap_to_add:"[TRANSLATE: Tap to add patient details]", edit_btn:"[TRANSLATE: Edit]", play_for_patient:"[TRANSLATE: Play for Patient]",
+    patient_details_title:"[TRANSLATE: Patient Details]",
+    patient_name_label:"[TRANSLATE: Patient Name]", age_condition_label:"[TRANSLATE: Age & Condition]", language_label:"[TRANSLATE: Language]",
+    // Feedback
+    feedback_title:"Wo Adwene ⭐", feedback_sub:"[TRANSLATE: Help improve HealthVoice GH]",
+    q_ease:"[TRANSLATE: How easy was the app to use?]",
+    q_helpful:"[TRANSLATE: Was the health information helpful?]",
+    q_audio:"[TRANSLATE: Was the audio clear enough?]",
+    q_recommend:"[TRANSLATE: Would you recommend this app?]",
+    q_comments:"[TRANSLATE: Any other comments? Optional]",
+    audio_yes:"[TRANSLATE: ✅ Yes, clear]", audio_mostly:"[TRANSLATE: 👍 Mostly]",
+    audio_sometimes:"[TRANSLATE: 🤔 Sometimes]", audio_no:"[TRANSLATE: ❌ Not clear]",
+    rec_yes:"[TRANSLATE: ✅ Definitely]", rec_maybe:"[TRANSLATE: 🤔 Maybe]", rec_no:"[TRANSLATE: ❌ No]",
+    submit_feedback:"[TRANSLATE: Submit Feedback]", skip_btn:"[TRANSLATE: Skip for now]",
+    comments_placeholder:"[TRANSLATE: Write your thoughts here…]",
+    save_btn:"[TRANSLATE: ✓ Save]", cancel_btn:"[TRANSLATE: Cancel]", continue:"[TRANSLATE: Continue]",
+    reminder_spoken:"Bere no aba. Nom wo {name}. {dose}.",
+    // Narration (audio file keys — see recording script)
+    narr_language:"[AUDIO: twi_narr_language.mp3]",
+    narr_home:"[AUDIO: twi_narr_home.mp3]",
+    narr_voice:"[AUDIO: twi_narr_voice.mp3]",
+    narr_topics:"[AUDIO: twi_narr_topics.mp3]",
+    narr_reminders:"[AUDIO: twi_narr_reminders.mp3]",
+    narr_nurse:"[AUDIO: twi_narr_nurse.mp3]",
+    narr_feedback:"[AUDIO: twi_narr_feedback.mp3]",
+  },
+
+  ga: {
+    nav_home:"Shia", nav_speak:"Kasa", nav_topics:"Nsɛm",
+    nav_remind:"Kae Mi", nav_nurse_short:"Nnurɔhwɛfɔ",
+    welcome_greeting:"Ogboo!",
+    home_question:"Hɛɛ le mɔ amↄ mihi?",
+    tap_speak:"Bↄ Ka",
+    ask_question:"[TRANSLATE: Ask any health question in your language — Ga]",
+    quick_access_label:"[TRANSLATE: Quick Access — Ga]",
+    nav_medicines:"[TRANSLATE: Medicines — Ga]", nav_medicines_sub:"[TRANSLATE: How & when to take your tablets — Ga]",
+    nav_condition:"[TRANSLATE: My Condition — Ga]", nav_condition_sub:"[TRANSLATE: Understand your diagnosis — Ga]",
+    nav_pregnancy:"[TRANSLATE: Pregnancy & Child Health — Ga]", nav_pregnancy_sub:"[TRANSLATE: Antenatal, newborn, vaccination — Ga]",
+    nav_reminders:"[TRANSLATE: My Reminders — Ga]", nav_reminders_sub:"[TRANSLATE: Medicine & clinic audio alerts — Ga]",
+    nav_nurse:"[TRANSLATE: Healthcare Worker Mode — Ga]", nav_nurse_sub:"[TRANSLATE: CHPS nurse & midwife tools — Ga]",
+    nav_feedback:"[TRANSLATE: Give Feedback — Ga]", nav_feedback_sub:"[TRANSLATE: Help us improve · Pilot study — Ga]",
+    voice_title:"[TRANSLATE: Voice Assistant 🎤 — Ga]", voice_sub:"[TRANSLATE: Speak in your language — Ga]",
+    tap_to_speak:"[TRANSLATE: Tap to Speak — Ga]", try_asking:"[TRANSLATE: Try asking — Ga]",
+    q_medicine:'"Ŋene mihi yɛɛ nnuro ni?"',
+    q_hypertension:'"Hypertension yɛ nitsɔɔmↄ?"',
+    q_antenatal:'"Hemle ni mekɔ abↄden antenatal?"',
+    q_fever:'"Me ba afi oshi. Ŋene mihi?"',
+    q_malaria:'"Hemle ni mikwae malaria?"',
+    play_btn:"[TRANSLATE: Play — Ga]", listening_msg:"[TRANSLATE: Listening — Ga]",
+    processing_msg:"[TRANSLATE: Processing — Ga]", playing_msg:"[TRANSLATE: Playing — Ga]",
+    topics_title:"[TRANSLATE: Health Topics — Ga]", topics_sub:"[TRANSLATE: Tap any topic to listen — Ga]",
+    topic_hypertension:"[TRANSLATE: High Blood Pressure — Ga]", topic_diabetes:"[TRANSLATE: Diabetes — Ga]", topic_diabetes_sub:"[TRANSLATE: Sugar Sickness — Ga]",
+    topic_malaria:"[TRANSLATE: Malaria — Ga]", topic_malaria_sub:"Asra",
+    topic_pregnancy:"[TRANSLATE: Pregnancy Care — Ga]", topic_pregnancy_sub:"[TRANSLATE: Antenatal — Ga]",
+    topic_child:"[TRANSLATE: Child Health — Ga]", topic_child_sub:"[TRANSLATE: Vaccination — Ga]",
+    topic_tb:"[TRANSLATE: Tuberculosis — Ga]", topic_nutrition:"[TRANSLATE: Healthy Eating — Ga]", topic_nutrition_sub:"[TRANSLATE: Aduane Pa — Ga]",
+    topic_medication:"[TRANSLATE: Taking Medicines — Ga]", topic_medication_sub:"[TRANSLATE: Nnuro — Ga]",
+    listen_btn:"[TRANSLATE: Listen — Ga]", close_btn:"[TRANSLATE: Close — Ga]",
+    reminders_title:"[TRANSLATE: My Reminders — Ga]", reminders_sub:"[TRANSLATE: Spoken alerts — Ga]",
+    notif_title:"[TRANSLATE: Enable Notifications — Ga]", notif_sub:"[TRANSLATE: Allow notifications — Ga]",
+    notif_btn:"[TRANSLATE: Allow — Ga]",
+    reminders_active:"[TRANSLATE: Audio Reminders Active — Ga]", reminders_active_sub:"[TRANSLATE: Works offline — Ga]",
+    your_medicines:"[TRANSLATE: Your Medicines — Ga]",
+    add_reminder:"[TRANSLATE: Add Reminder — Ga]", test_reminder:"[TRANSLATE: Test Reminder — Ga]",
+    add_reminder_title:"[TRANSLATE: Add Reminder — Ga]",
+    medicine_name_label:"[TRANSLATE: Medicine Name — Ga]", medicine_name_placeholder:"[TRANSLATE: e.g. Amlodipine — Ga]",
+    time_label:"[TRANSLATE: Time — Ga]", dose_label:"[TRANSLATE: Dose — Ga]", dose_placeholder:"[TRANSLATE: 1 tablet — Ga]",
+    instruction_label:"[TRANSLATE: Instruction — Ga]", instruction_placeholder:"[TRANSLATE: After food — Ga]",
+    no_reminders:"[TRANSLATE: No reminders yet — Ga]", no_reminders_sub:"[TRANSLATE: Add first reminder — Ga]",
+    nurse_title:"[TRANSLATE: Nurse Mode — Ga]", nurse_sub:"[TRANSLATE: Patient Education — Ga]",
+    current_patient:"[TRANSLATE: Current Patient — Ga]", select_patient:"[TRANSLATE: Select Patient — Ga]",
+    tap_to_add:"[TRANSLATE: Tap to add — Ga]", edit_btn:"[TRANSLATE: Edit — Ga]", play_for_patient:"[TRANSLATE: Play for Patient — Ga]",
+    patient_details_title:"[TRANSLATE: Patient Details — Ga]",
+    patient_name_label:"[TRANSLATE: Patient Name — Ga]", age_condition_label:"[TRANSLATE: Age & Condition — Ga]", language_label:"[TRANSLATE: Language — Ga]",
+    feedback_title:"[TRANSLATE: Feedback — Ga]", feedback_sub:"[TRANSLATE: Help us improve — Ga]",
+    q_ease:"[TRANSLATE: How easy was the app? — Ga]", q_helpful:"[TRANSLATE: Was info helpful? — Ga]",
+    q_audio:"[TRANSLATE: Was audio clear? — Ga]", q_recommend:"[TRANSLATE: Recommend this app? — Ga]",
+    q_comments:"[TRANSLATE: Any comments? — Ga]",
+    audio_yes:"[TRANSLATE: ✅ Clear — Ga]", audio_mostly:"[TRANSLATE: 👍 Mostly — Ga]",
+    audio_sometimes:"[TRANSLATE: 🤔 Sometimes — Ga]", audio_no:"[TRANSLATE: ❌ No — Ga]",
+    rec_yes:"[TRANSLATE: ✅ Yes — Ga]", rec_maybe:"[TRANSLATE: 🤔 Maybe — Ga]", rec_no:"[TRANSLATE: ❌ No — Ga]",
+    submit_feedback:"[TRANSLATE: Submit — Ga]", skip_btn:"[TRANSLATE: Skip — Ga]",
+    comments_placeholder:"[TRANSLATE: Write here — Ga]",
+    save_btn:"[TRANSLATE: Save — Ga]", cancel_btn:"[TRANSLATE: Cancel — Ga]", continue:"[TRANSLATE: Continue — Ga]",
+    reminder_spoken:"Gbɛkɛ ni aba. Mi {name} ni. {dose}.",
+    narr_language:"[AUDIO: ga_narr_language.mp3]",
+    narr_home:"[AUDIO: ga_narr_home.mp3]",
+    narr_voice:"[AUDIO: ga_narr_voice.mp3]",
+    narr_topics:"[AUDIO: ga_narr_topics.mp3]",
+    narr_reminders:"[AUDIO: ga_narr_reminders.mp3]",
+    narr_nurse:"[AUDIO: ga_narr_nurse.mp3]",
+    narr_feedback:"[AUDIO: ga_narr_feedback.mp3]",
+  },
+
+  ewe: {
+    nav_home:"Ƒe", nav_speak:"Ðo Nu", nav_topics:"Nyatakakawo",
+    nav_remind:"Kpɔ Nye", nav_nurse_short:"Lɔlɔ̃ nyɔnuwo",
+    welcome_greeting:"Ŋdi na mi!",
+    home_question:"Etɔ̃ sia nèhiã gbɔ?",
+    tap_speak:"Ðo Nu",
+    ask_question:"[TRANSLATE: Ask any health question in your language — Ewe]",
+    quick_access_label:"[TRANSLATE: Quick Access — Ewe]",
+    nav_medicines:"[TRANSLATE: Medicines — Ewe]", nav_medicines_sub:"[TRANSLATE: How & when to take your tablets — Ewe]",
+    nav_condition:"[TRANSLATE: My Condition — Ewe]", nav_condition_sub:"[TRANSLATE: Understand your diagnosis — Ewe]",
+    nav_pregnancy:"[TRANSLATE: Pregnancy & Child Health — Ewe]", nav_pregnancy_sub:"[TRANSLATE: Antenatal, newborn, vaccination — Ewe]",
+    nav_reminders:"[TRANSLATE: My Reminders — Ewe]", nav_reminders_sub:"[TRANSLATE: Medicine & clinic audio alerts — Ewe]",
+    nav_nurse:"[TRANSLATE: Healthcare Worker Mode — Ewe]", nav_nurse_sub:"[TRANSLATE: CHPS nurse & midwife tools — Ewe]",
+    nav_feedback:"[TRANSLATE: Give Feedback — Ewe]", nav_feedback_sub:"[TRANSLATE: Help us improve · Pilot study — Ewe]",
+    voice_title:"[TRANSLATE: Voice Assistant 🎤 — Ewe]", voice_sub:"[TRANSLATE: Speak in your language — Ewe]",
+    tap_to_speak:"[TRANSLATE: Tap to Speak — Ewe]", try_asking:"[TRANSLATE: Try asking — Ewe]",
+    q_medicine:'"Aleke nɔ xɔ atike la?"',
+    q_hypertension:'"Hypertension enye nɛ?"',
+    q_antenatal:'"Aleke nɔ yi aƒedɔwɔlawo dome?"',
+    q_fever:'"Ŋutsu ame le dzi. Nɔ wɔ nɛ?"',
+    q_malaria:'"Aleke nɔ zɔ malaria ŋu?"',
+    play_btn:"[TRANSLATE: Play — Ewe]", listening_msg:"[TRANSLATE: Listening — Ewe]",
+    processing_msg:"[TRANSLATE: Processing — Ewe]", playing_msg:"[TRANSLATE: Playing — Ewe]",
+    topics_title:"[TRANSLATE: Health Topics — Ewe]", topics_sub:"[TRANSLATE: Tap any topic to listen — Ewe]",
+    topic_hypertension:"[TRANSLATE: High Blood Pressure — Ewe]", topic_diabetes:"[TRANSLATE: Diabetes — Ewe]", topic_diabetes_sub:"[TRANSLATE: Sugar Sickness — Ewe]",
+    topic_malaria:"[TRANSLATE: Malaria — Ewe]", topic_malaria_sub:"[TRANSLATE: Asra — Ewe]",
+    topic_pregnancy:"[TRANSLATE: Pregnancy Care — Ewe]", topic_pregnancy_sub:"[TRANSLATE: Antenatal — Ewe]",
+    topic_child:"[TRANSLATE: Child Health — Ewe]", topic_child_sub:"[TRANSLATE: Vaccination — Ewe]",
+    topic_tb:"[TRANSLATE: Tuberculosis — Ewe]", topic_nutrition:"[TRANSLATE: Healthy Eating — Ewe]", topic_nutrition_sub:"[TRANSLATE: Aduane Pa — Ewe]",
+    topic_medication:"[TRANSLATE: Taking Medicines — Ewe]", topic_medication_sub:"[TRANSLATE: Nnuro — Ewe]",
+    listen_btn:"[TRANSLATE: Listen — Ewe]", close_btn:"[TRANSLATE: Close — Ewe]",
+    reminders_title:"[TRANSLATE: My Reminders — Ewe]", reminders_sub:"[TRANSLATE: Spoken alerts — Ewe]",
+    notif_title:"[TRANSLATE: Enable Notifications — Ewe]", notif_sub:"[TRANSLATE: Allow notifications — Ewe]",
+    notif_btn:"[TRANSLATE: Allow — Ewe]",
+    reminders_active:"[TRANSLATE: Audio Reminders Active — Ewe]", reminders_active_sub:"[TRANSLATE: Works offline — Ewe]",
+    your_medicines:"[TRANSLATE: Your Medicines — Ewe]",
+    add_reminder:"[TRANSLATE: Add Reminder — Ewe]", test_reminder:"[TRANSLATE: Test Reminder — Ewe]",
+    add_reminder_title:"[TRANSLATE: Add Reminder — Ewe]",
+    medicine_name_label:"[TRANSLATE: Medicine Name — Ewe]", medicine_name_placeholder:"[TRANSLATE: e.g. Amlodipine — Ewe]",
+    time_label:"[TRANSLATE: Time — Ewe]", dose_label:"[TRANSLATE: Dose — Ewe]", dose_placeholder:"[TRANSLATE: 1 tablet — Ewe]",
+    instruction_label:"[TRANSLATE: Instruction — Ewe]", instruction_placeholder:"[TRANSLATE: After food — Ewe]",
+    no_reminders:"[TRANSLATE: No reminders yet — Ewe]", no_reminders_sub:"[TRANSLATE: Add first reminder — Ewe]",
+    nurse_title:"[TRANSLATE: Nurse Mode — Ewe]", nurse_sub:"[TRANSLATE: Patient Education — Ewe]",
+    current_patient:"[TRANSLATE: Current Patient — Ewe]", select_patient:"[TRANSLATE: Select Patient — Ewe]",
+    tap_to_add:"[TRANSLATE: Tap to add — Ewe]", edit_btn:"[TRANSLATE: Edit — Ewe]", play_for_patient:"[TRANSLATE: Play for Patient — Ewe]",
+    patient_details_title:"[TRANSLATE: Patient Details — Ewe]",
+    patient_name_label:"[TRANSLATE: Patient Name — Ewe]", age_condition_label:"[TRANSLATE: Age & Condition — Ewe]", language_label:"[TRANSLATE: Language — Ewe]",
+    feedback_title:"[TRANSLATE: Feedback — Ewe]", feedback_sub:"[TRANSLATE: Help us improve — Ewe]",
+    q_ease:"[TRANSLATE: How easy was the app? — Ewe]", q_helpful:"[TRANSLATE: Was info helpful? — Ewe]",
+    q_audio:"[TRANSLATE: Was audio clear? — Ewe]", q_recommend:"[TRANSLATE: Recommend this app? — Ewe]",
+    q_comments:"[TRANSLATE: Any comments? — Ewe]",
+    audio_yes:"[TRANSLATE: ✅ Clear — Ewe]", audio_mostly:"[TRANSLATE: 👍 Mostly — Ewe]",
+    audio_sometimes:"[TRANSLATE: 🤔 Sometimes — Ewe]", audio_no:"[TRANSLATE: ❌ No — Ewe]",
+    rec_yes:"[TRANSLATE: ✅ Yes — Ewe]", rec_maybe:"[TRANSLATE: 🤔 Maybe — Ewe]", rec_no:"[TRANSLATE: ❌ No — Ewe]",
+    submit_feedback:"[TRANSLATE: Submit — Ewe]", skip_btn:"[TRANSLATE: Skip — Ewe]",
+    comments_placeholder:"[TRANSLATE: Write here — Ewe]",
+    save_btn:"[TRANSLATE: Save — Ewe]", cancel_btn:"[TRANSLATE: Cancel — Ewe]", continue:"[TRANSLATE: Continue — Ewe]",
+    reminder_spoken:"Ŋkeke la ɖe. Xɔ wo {name}. {dose}.",
+    narr_language:"[AUDIO: ewe_narr_language.mp3]",
+    narr_home:"[AUDIO: ewe_narr_home.mp3]",
+    narr_voice:"[AUDIO: ewe_narr_voice.mp3]",
+    narr_topics:"[AUDIO: ewe_narr_topics.mp3]",
+    narr_reminders:"[AUDIO: ewe_narr_reminders.mp3]",
+    narr_nurse:"[AUDIO: ewe_narr_nurse.mp3]",
+    narr_feedback:"[AUDIO: ewe_narr_feedback.mp3]",
+  },
+
+  hausa: {
+    nav_home:"Gida", nav_speak:"Yi Magana", nav_topics:"Batutuwa",
+    nav_remind:"Tunatar Da Ni", nav_nurse_short:"Ma'aikacin Lafiya",
+    welcome_greeting:"Sannu!",
+    home_question:"Mene ne kake bukata?",
+    tap_speak:"Danna ka yi magana",
+    ask_question:"[TRANSLATE: Ask any health question in your language — Hausa]",
+    quick_access_label:"[TRANSLATE: Quick Access — Hausa]",
+    nav_medicines:"[TRANSLATE: Medicines — Hausa]", nav_medicines_sub:"[TRANSLATE: How & when to take your tablets — Hausa]",
+    nav_condition:"[TRANSLATE: My Condition — Hausa]", nav_condition_sub:"[TRANSLATE: Understand your diagnosis — Hausa]",
+    nav_pregnancy:"[TRANSLATE: Pregnancy & Child Health — Hausa]", nav_pregnancy_sub:"[TRANSLATE: Antenatal, newborn, vaccination — Hausa]",
+    nav_reminders:"[TRANSLATE: My Reminders — Hausa]", nav_reminders_sub:"[TRANSLATE: Medicine & clinic audio alerts — Hausa]",
+    nav_nurse:"[TRANSLATE: Healthcare Worker Mode — Hausa]", nav_nurse_sub:"[TRANSLATE: CHPS nurse & midwife tools — Hausa]",
+    nav_feedback:"[TRANSLATE: Give Feedback — Hausa]", nav_feedback_sub:"[TRANSLATE: Help us improve · Pilot study — Hausa]",
+    voice_title:"[TRANSLATE: Voice Assistant 🎤 — Hausa]", voice_sub:"[TRANSLATE: Speak in your language — Hausa]",
+    tap_to_speak:"[TRANSLATE: Tap to Speak — Hausa]", try_asking:"[TRANSLATE: Try asking — Hausa]",
+    q_medicine:'"Yaya zan ɗauki wannan magani?"',
+    q_hypertension:'"Mene ne hypertension?"',
+    q_antenatal:'"Me ya sa zan je asibiti lokacin juna biyu?"',
+    q_fever:'"Ɗana yana da zazzabi. Me zan yi?"',
+    q_malaria:'"Yaya zan kare kaina daga zazzabin cizon sauro?"',
+    play_btn:"[TRANSLATE: Play — Hausa]", listening_msg:"[TRANSLATE: Listening — Hausa]",
+    processing_msg:"[TRANSLATE: Processing — Hausa]", playing_msg:"[TRANSLATE: Playing — Hausa]",
+    topics_title:"[TRANSLATE: Health Topics — Hausa]", topics_sub:"[TRANSLATE: Tap any topic to listen — Hausa]",
+    topic_hypertension:"[TRANSLATE: High Blood Pressure — Hausa]", topic_diabetes:"[TRANSLATE: Diabetes — Hausa]", topic_diabetes_sub:"[TRANSLATE: Sugar Sickness — Hausa]",
+    topic_malaria:"[TRANSLATE: Malaria — Hausa]", topic_malaria_sub:"[TRANSLATE: Asra — Hausa]",
+    topic_pregnancy:"[TRANSLATE: Pregnancy Care — Hausa]", topic_pregnancy_sub:"[TRANSLATE: Antenatal — Hausa]",
+    topic_child:"[TRANSLATE: Child Health — Hausa]", topic_child_sub:"[TRANSLATE: Vaccination — Hausa]",
+    topic_tb:"[TRANSLATE: Tuberculosis — Hausa]", topic_nutrition:"[TRANSLATE: Healthy Eating — Hausa]", topic_nutrition_sub:"[TRANSLATE: Aduane Pa — Hausa]",
+    topic_medication:"[TRANSLATE: Taking Medicines — Hausa]", topic_medication_sub:"[TRANSLATE: Nnuro — Hausa]",
+    listen_btn:"[TRANSLATE: Listen — Hausa]", close_btn:"[TRANSLATE: Close — Hausa]",
+    reminders_title:"[TRANSLATE: My Reminders — Hausa]", reminders_sub:"[TRANSLATE: Spoken alerts — Hausa]",
+    notif_title:"[TRANSLATE: Enable Notifications — Hausa]", notif_sub:"[TRANSLATE: Allow notifications — Hausa]",
+    notif_btn:"[TRANSLATE: Allow — Hausa]",
+    reminders_active:"[TRANSLATE: Audio Reminders Active — Hausa]", reminders_active_sub:"[TRANSLATE: Works offline — Hausa]",
+    your_medicines:"[TRANSLATE: Your Medicines — Hausa]",
+    add_reminder:"[TRANSLATE: Add Reminder — Hausa]", test_reminder:"[TRANSLATE: Test Reminder — Hausa]",
+    add_reminder_title:"[TRANSLATE: Add Reminder — Hausa]",
+    medicine_name_label:"[TRANSLATE: Medicine Name — Hausa]", medicine_name_placeholder:"[TRANSLATE: e.g. Amlodipine — Hausa]",
+    time_label:"[TRANSLATE: Time — Hausa]", dose_label:"[TRANSLATE: Dose — Hausa]", dose_placeholder:"[TRANSLATE: 1 tablet — Hausa]",
+    instruction_label:"[TRANSLATE: Instruction — Hausa]", instruction_placeholder:"[TRANSLATE: After food — Hausa]",
+    no_reminders:"[TRANSLATE: No reminders yet — Hausa]", no_reminders_sub:"[TRANSLATE: Add first reminder — Hausa]",
+    nurse_title:"[TRANSLATE: Nurse Mode — Hausa]", nurse_sub:"[TRANSLATE: Patient Education — Hausa]",
+    current_patient:"[TRANSLATE: Current Patient — Hausa]", select_patient:"[TRANSLATE: Select Patient — Hausa]",
+    tap_to_add:"[TRANSLATE: Tap to add — Hausa]", edit_btn:"[TRANSLATE: Edit — Hausa]", play_for_patient:"[TRANSLATE: Play for Patient — Hausa]",
+    patient_details_title:"[TRANSLATE: Patient Details — Hausa]",
+    patient_name_label:"[TRANSLATE: Patient Name — Hausa]", age_condition_label:"[TRANSLATE: Age & Condition — Hausa]", language_label:"[TRANSLATE: Language — Hausa]",
+    feedback_title:"[TRANSLATE: Feedback — Hausa]", feedback_sub:"[TRANSLATE: Help us improve — Hausa]",
+    q_ease:"[TRANSLATE: How easy was the app? — Hausa]", q_helpful:"[TRANSLATE: Was info helpful? — Hausa]",
+    q_audio:"[TRANSLATE: Was audio clear? — Hausa]", q_recommend:"[TRANSLATE: Recommend this app? — Hausa]",
+    q_comments:"[TRANSLATE: Any comments? — Hausa]",
+    audio_yes:"[TRANSLATE: ✅ Clear — Hausa]", audio_mostly:"[TRANSLATE: 👍 Mostly — Hausa]",
+    audio_sometimes:"[TRANSLATE: 🤔 Sometimes — Hausa]", audio_no:"[TRANSLATE: ❌ No — Hausa]",
+    rec_yes:"[TRANSLATE: ✅ Yes — Hausa]", rec_maybe:"[TRANSLATE: 🤔 Maybe — Hausa]", rec_no:"[TRANSLATE: ❌ No — Hausa]",
+    submit_feedback:"[TRANSLATE: Submit — Hausa]", skip_btn:"[TRANSLATE: Skip — Hausa]",
+    comments_placeholder:"[TRANSLATE: Write here — Hausa]",
+    save_btn:"[TRANSLATE: Save — Hausa]", cancel_btn:"[TRANSLATE: Cancel — Hausa]", continue:"[TRANSLATE: Continue — Hausa]",
+    reminder_spoken:"Lokacin ya yi. Ka ɗauki {name}. {dose}.",
+    narr_language:"[AUDIO: hausa_narr_language.mp3]",
+    narr_home:"[AUDIO: hausa_narr_home.mp3]",
+    narr_voice:"[AUDIO: hausa_narr_voice.mp3]",
+    narr_topics:"[AUDIO: hausa_narr_topics.mp3]",
+    narr_reminders:"[AUDIO: hausa_narr_reminders.mp3]",
+    narr_nurse:"[AUDIO: hausa_narr_nurse.mp3]",
+    narr_feedback:"[AUDIO: hausa_narr_feedback.mp3]",
+  }
+};
+
+// Translation helper
+function t(key) {
+  const lang = S.currentLang || 'english';
+  return (T[lang] && T[lang][key]) || T.english[key] || key;
+}
+
+// Apply all translations to DOM
+function applyTranslations() {
+  const lang = S.currentLang || 'english';
+  document.querySelectorAll('[data-t]').forEach(el => {
+    const key = el.getAttribute('data-t');
+    const val = (T[lang] && T[lang][key]) || T.english[key];
+    if (val) el.textContent = val;
+  });
+  document.querySelectorAll('[data-t-placeholder]').forEach(el => {
+    const key = el.getAttribute('data-t-placeholder');
+    const val = (T[lang] && T[lang][key]) || T.english[key];
+    if (val) el.placeholder = val;
+  });
+}
+</script>
+
+<!-- ════════════════════════════════════════════
+     AUDIO SYSTEM
+     ════════════════════════════════════════════ -->
+<script>
+// ─────────────────────────────────────────────
+// AUDIO FILE MAP
+// Files live in /audio/ folder on your server
+// Naming: {lang}_{key}.mp3
+// e.g. twi_narr_home.mp3
+// ─────────────────────────────────────────────
+
+// Screen narration keys → audio file names
+const SCREEN_AUDIO = {
+  language:   'narr_language',
+  home:       'narr_home',
+  voice:      'narr_voice',
+  topics:     'narr_topics',
+  reminders:  'narr_reminders',
+  nurse:      'narr_nurse',
+  feedback:   'narr_feedback',
+};
+
+// Voice Q&A audio keys → audio file names
+// Files: {lang}_qa_{topic}.mp3
+const QA_AUDIO_KEYS = {
+  medicine:     'qa_medicine',
+  hypertension: 'qa_hypertension',
+  antenatal:    'qa_antenatal',
+  fever:        'qa_fever',
+  malaria:      'qa_malaria',
+};
+
+// Topic detail audio keys → audio file names
+// Files: {lang}_topic_{id}.mp3
+const TOPIC_AUDIO_KEYS = {
+  hypertension: 'topic_hypertension',
+  diabetes:     'topic_diabetes',
+  malaria:      'topic_malaria',
+  pregnancy:    'topic_pregnancy',
+  childhealth:  'topic_childhealth',
+  tb:           'topic_tb',
+  nutrition:    'topic_nutrition',
+  medication:   'topic_medication',
+};
+
+// Nurse script audio keys
+// Files: {lang}_nurse_{id}.mp3
+const NURSE_AUDIO_KEYS = {
+  bp:          'nurse_bp',
+  medicine:    'nurse_medicine',
+  danger:      'nurse_danger',
+  vaccination: 'nurse_vaccination',
+  malaria_prev:'nurse_malaria_prev',
+};
+
+let currentAudio = null;
+let audioFallbackSynth = window.speechSynthesis;
+
+function audioPath(lang, key) {
+  return `audio/${lang}_${key}.mp3`;
+}
+
+function playAudio(lang, key, onEnd) {
+  // Stop any current audio
+  stopAudio();
+
+  const path = audioPath(lang, key);
+  const audio = new Audio(path);
+  currentAudio = audio;
+
+  // Show indicator
+  const ind = document.getElementById('audio-indicator');
+  const lbl = document.getElementById('ai-label');
+  if (ind) { ind.classList.add('on'); if(lbl) lbl.textContent = 'Playing…'; }
+
+  audio.onended = () => {
+    ind && ind.classList.remove('on');
+    onEnd && onEnd();
+  };
+  audio.onerror = () => {
+    // Audio file not found — fall back to English TTS
+    ind && ind.classList.remove('on');
+    console.log(`Audio not found: ${path} — using TTS fallback`);
+    speakFallback(lang, key, onEnd);
+  };
+
+  audio.play().catch(() => {
+    ind && ind.classList.remove('on');
+    speakFallback(lang, key, onEnd);
+  });
+}
+
+function stopAudio() {
+  if (currentAudio) {
+    try { currentAudio.pause(); currentAudio.currentTime = 0; } catch(e){}
+    currentAudio = null;
+  }
+  audioFallbackSynth && audioFallbackSynth.cancel();
+  const ind = document.getElementById('audio-indicator');
+  ind && ind.classList.remove('on');
+}
+
+// Fallback: English TTS until real audio is recorded
+function speakFallback(lang, key, onEnd) {
+  if (!audioFallbackSynth) return onEnd && onEnd();
+  audioFallbackSynth.cancel();
+  // Use the English translation as fallback text
+  const text = T.english[key] || '';
+  if (!text || text.startsWith('[AUDIO') || text.startsWith('[TRANSLATE')) {
+    onEnd && onEnd();
+    return;
+  }
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-GB'; u.rate = 0.88; u.pitch = 1.05;
+  if (onEnd) u.onend = onEnd;
+  audioFallbackSynth.speak(u);
+}
+
+function playScreenNarration(screenName) {
+  const key = SCREEN_AUDIO[screenName];
+  if (!key) return;
+  // Small delay so screen has finished animating
+  setTimeout(() => playAudio(S.currentLang, key), 600);
+}
+</script>
+
+<!-- ════════════════════════════════════════════
+     HEALTH CONTENT DATA
+     ════════════════════════════════════════════ -->
+<script>
 const VOICE_DATA = {
   medicine:{
-    twi:{native:"Ɛhwan bɔ sɛ mede nnuro no?",steps:["Take one tablet every morning — after food","Take one tablet every evening — before sleep","Never stop — even when you feel better","Tell your doctor if you feel dizzy or have side effects"],lang:"🌿 Twi"},
-    ga:{native:"Ŋene mihi yɛɛ nnuro ni?",steps:["Take one tablet every morning after food","Take one tablet at night before sleep","Do not stop medicine when feeling well","Visit clinic every month for a check"],lang:"🌊 Ga"},
-    ewe:{native:"Aleke nɔ xɔ atike la?",steps:["Take one tablet every morning with food","Take one tablet every evening","Never skip — even on good days","Tell your nurse of any side effects"],lang:"🌻 Ewe"},
-    hausa:{native:"Yaya zan ɗauki wannan magani?",steps:["Take one tablet every morning after food","Drink plenty of clean water with it","Take again at night before sleeping","Never stop without doctor's advice"],lang:"🌙 Hausa"},
-    english:{native:"How do I take this medicine?",steps:["Take one tablet every morning after eating","Take one tablet every evening before sleep","Never stop even if you feel well","Contact your doctor about any side effects"],lang:"🇬🇭 English"}
+    twi:{native:"Ɛhwan bɔ sɛ mede nnuro no?",steps:["Take one tablet every morning — after food","Take one tablet every evening — before sleep","Never stop — even when you feel better","Tell your doctor if you feel dizzy or have side effects"],audioKey:"qa_medicine"},
+    ga:{native:"Ŋene mihi yɛɛ nnuro ni?",steps:["Take one tablet every morning after food","Take one tablet at night before sleep","Do not stop medicine when feeling well","Visit clinic every month for a check"],audioKey:"qa_medicine"},
+    ewe:{native:"Aleke nɔ xɔ atike la?",steps:["Take one tablet every morning with food","Take one tablet every evening","Never skip — even on good days","Tell your nurse of any side effects"],audioKey:"qa_medicine"},
+    hausa:{native:"Yaya zan ɗauki wannan magani?",steps:["Take one tablet every morning after food","Drink plenty of clean water with it","Take again at night before sleeping","Never stop without doctor's advice"],audioKey:"qa_medicine"},
+    english:{native:"How do I take this medicine?",steps:["Take one tablet every morning after eating","Take one tablet every evening before sleep","Never stop even if you feel well","Contact your doctor about any side effects"],audioKey:"qa_medicine"}
   },
   hypertension:{
-    twi:{native:"Hypertension yɛ dɛn?",steps:["Blood pressure means how hard blood pushes in your veins","When too high — it can damage your heart and brain over time","Take your medicine every single day — even when feeling fine","Eat less salt, walk 30 minutes daily, rest well"],lang:"🌿 Twi"},
-    ga:{native:"Hypertension yɛ nitsɔɔmↄ?",steps:["Blood pressure is the force of blood in your vessels","Too much pressure harms your heart and brain silently","Take medicine every day without stopping","Eat less salt and exercise gently daily"],lang:"🌊 Ga"},
-    ewe:{native:"Hypertension enye nɛ?",steps:["Hypertension is high pressure in your blood vessels","It slowly damages your heart, kidney, and brain","Take your tablets every single day","Reduce salt — eat more vegetables and fruits"],lang:"🌻 Ewe"},
-    hausa:{native:"Mene ne hypertension?",steps:["Hypertension means blood flows with too much force in the body","It can slowly damage the heart and brain over time","Take your medicine every day — this controls the pressure","Reduce salt, exercise, and rest well"],lang:"🌙 Hausa"},
-    english:{native:"What is hypertension?",steps:["Hypertension means high blood pressure in your vessels","It can silently damage your heart and brain over time","Take your medicine daily — even when you feel normal","Reduce salt intake, walk daily, and attend regular check-ups"],lang:"🇬🇭 English"}
+    twi:{native:"Hypertension yɛ dɛn?",steps:["Blood pressure means how hard blood pushes in your veins","When too high — it can damage your heart and brain","Take your medicine every day — even when feeling fine","Eat less salt, walk 30 minutes daily, rest well"],audioKey:"qa_hypertension"},
+    ga:{native:"Hypertension yɛ nitsɔɔmↄ?",steps:["Blood pressure is the force of blood in your vessels","Too much pressure harms your heart and brain","Take medicine every day without stopping","Eat less salt and exercise gently daily"],audioKey:"qa_hypertension"},
+    ewe:{native:"Hypertension enye nɛ?",steps:["Hypertension is high pressure in your blood vessels","It slowly damages your heart, kidney, and brain","Take your tablets every single day","Reduce salt — eat more vegetables and fruits"],audioKey:"qa_hypertension"},
+    hausa:{native:"Mene ne hypertension?",steps:["Hypertension means blood flows with too much force","It can slowly damage the heart and brain","Take your medicine every day","Reduce salt, exercise, and rest well"],audioKey:"qa_hypertension"},
+    english:{native:"What is hypertension?",steps:["Hypertension means high blood pressure in your vessels","It can silently damage your heart and brain","Take your medicine daily — even when you feel normal","Reduce salt, walk daily, and attend regular check-ups"],audioKey:"qa_hypertension"}
   },
   antenatal:{
-    twi:{native:"Adɛn nti na mekɔ abↄden antenatal?",steps:["Clinic visits check your baby is growing well","We catch problems early before they become serious","You receive vitamins that protect mother and child","Come at least 8 times during your pregnancy"],lang:"🌿 Twi"},
-    ga:{native:"Hemle ni mekɔ abↄden antenatal?",steps:["Clinic checks baby grows healthy and strong","It catches danger signs before they cause harm","You get vitamins for you and baby's protection","Visit at least 8 times before your baby is born"],lang:"🌊 Ga"},
-    ewe:{native:"Aleke nɔ yi aƒedɔwɔlawo dome?",steps:["The clinic checks your baby's growth every visit","Nurses can find problems early and help immediately","You receive iron and folic acid to protect baby","Go at least 8 times throughout your pregnancy"],lang:"🌻 Ewe"},
-    hausa:{native:"Me ya sa zan je asibiti lokacin juna biyu?",steps:["Clinic visits check your baby is growing properly","Doctors find problems early and treat them quickly","You receive medicines to keep you and baby healthy","Come at least 8 times before your baby is born"],lang:"🌙 Hausa"},
-    english:{native:"Why should I attend antenatal clinic?",steps:["Clinic checks your baby is growing healthy","Nurses detect problems early before they cause harm","You receive iron, folic acid, and vaccinations","Attend at least 8 times during your pregnancy"],lang:"🇬🇭 English"}
+    twi:{native:"Adɛn nti na mekɔ abↄden antenatal?",steps:["Clinic visits check your baby is growing well","We catch problems early before they become serious","You receive vitamins that protect mother and child","Come at least 8 times during your pregnancy"],audioKey:"qa_antenatal"},
+    ga:{native:"Hemle ni mekɔ abↄden antenatal?",steps:["Clinic checks baby grows healthy and strong","It catches danger signs before they cause harm","You get vitamins for you and baby","Visit at least 8 times before your baby is born"],audioKey:"qa_antenatal"},
+    ewe:{native:"Aleke nɔ yi aƒedɔwɔlawo dome?",steps:["The clinic checks your baby's growth every visit","Nurses find problems early and help immediately","You receive iron and folic acid to protect baby","Go at least 8 times throughout your pregnancy"],audioKey:"qa_antenatal"},
+    hausa:{native:"Me ya sa zan je asibiti lokacin juna biyu?",steps:["Clinic visits check your baby is growing properly","Doctors find problems early and treat quickly","You receive medicines to keep you and baby healthy","Come at least 8 times before your baby is born"],audioKey:"qa_antenatal"},
+    english:{native:"Why should I attend antenatal clinic?",steps:["Clinic checks your baby is growing healthy","Nurses detect problems early","You receive iron, folic acid, and vaccinations","Attend at least 8 times during your pregnancy"],audioKey:"qa_antenatal"}
   },
   fever:{
-    twi:{native:"Me ba ho hyɛ. Mɛyɛ dɛn?",steps:["Check child's temperature — normal is below 37.5°C","Give paracetamol at correct dose for child's weight","Keep child cool — remove heavy clothing","If fever lasts more than 2 days — go to clinic urgently"],lang:"🌿 Twi"},
-    ga:{native:"Me ba afi oshi. Ŋene mihi?",steps:["Check temperature with a thermometer","Give paracetamol — right dose for child's weight","Give plenty of fluids to drink","Visit clinic if fever lasts more than 2 days"],lang:"🌊 Ga"},
-    ewe:{native:"Ŋutsu ame le dzi. Nɔ wɔ nɛ?",steps:["Check if fever is above 38 degrees Celsius","Give paracetamol at the right dose for their age","Keep the child hydrated — give water or soup","Go to clinic quickly if fever lasts two days or more"],lang:"🌻 Ewe"},
-    hausa:{native:"Ɗana yana da zazzabi. Me zan yi?",steps:["Check temperature — fever is above 38 degrees Celsius","Give paracetamol at the correct dose for child's weight","Give the child plenty of water or fluids to drink","If fever lasts more than 2 days — visit the clinic now"],lang:"🌙 Hausa"},
-    english:{native:"My child has fever. What do I do?",steps:["Check temperature — fever is above 37.5°C","Give paracetamol at the correct dose for your child's weight","Keep the child cool and give plenty of fluids","Visit the clinic urgently if fever lasts more than 2 days"],lang:"🇬🇭 English"}
+    twi:{native:"Me ba ho hyɛ. Mɛyɛ dɛn?",steps:["Check child's temperature — normal is below 37.5°C","Give paracetamol at correct dose for child's weight","Keep child cool — remove heavy clothing","If fever lasts more than 2 days — go to clinic urgently"],audioKey:"qa_fever"},
+    ga:{native:"Me ba afi oshi. Ŋene mihi?",steps:["Check temperature with a thermometer","Give paracetamol — right dose for child's weight","Give plenty of fluids to drink","Visit clinic if fever lasts more than 2 days"],audioKey:"qa_fever"},
+    ewe:{native:"Ŋutsu ame le dzi. Nɔ wɔ nɛ?",steps:["Check if fever is above 38 degrees Celsius","Give paracetamol at the right dose","Keep the child hydrated","Go to clinic quickly if fever lasts two days or more"],audioKey:"qa_fever"},
+    hausa:{native:"Ɗana yana da zazzabi. Me zan yi?",steps:["Check temperature — fever is above 38 degrees","Give paracetamol at the correct dose","Give the child plenty of water","If fever lasts more than 2 days — visit the clinic now"],audioKey:"qa_fever"},
+    english:{native:"My child has fever. What do I do?",steps:["Check temperature — fever is above 37.5°C","Give paracetamol at the correct dose","Keep the child cool and give plenty of fluids","Visit the clinic urgently if fever lasts more than 2 days"],audioKey:"qa_fever"}
   },
   malaria:{
-    twi:{native:"Ɛhwan na mede mekwae malaria?",steps:["Sleep under an insecticide-treated bed net every night","Remove standing water near your home — mosquitoes breed there","If you have fever and body pain — go to clinic quickly","Complete the full course of antimalarial medicine given"],lang:"🌿 Twi"},
-    ga:{native:"Hemle ni mikwae malaria?",steps:["Sleep under a treated mosquito net every night","Remove standing water near the house","Go to clinic quickly if fever and body pains come","Complete all antimalarial medicine given to you"],lang:"🌊 Ga"},
-    ewe:{native:"Aleke nɔ zɔ malaria ŋu?",steps:["Sleep under an insecticide net every night","Remove standing water around your home","Go to clinic quickly if you develop fever and pains","Take all antimalarial tablets given until finished"],lang:"🌻 Ewe"},
-    hausa:{native:"Yaya zan kare kaina daga zazzabin cizon sauro?",steps:["Sleep under an insecticide-treated net every night","Remove all standing water near your home","Visit clinic quickly if you get fever and body pains","Complete all the antimalarial medicine prescribed to you"],lang:"🌙 Hausa"},
-    english:{native:"How do I prevent malaria?",steps:["Sleep under an insecticide-treated bed net every night","Remove standing water near your home","Go to clinic quickly if you develop fever and body pains","Complete the full course of any antimalarial medicine given"],lang:"🇬🇭 English"}
+    twi:{native:"Ɛhwan na mede mekwae malaria?",steps:["Sleep under an insecticide-treated bed net every night","Remove standing water near your home","If you have fever and body pain — go to clinic quickly","Complete the full course of antimalarial medicine"],audioKey:"qa_malaria"},
+    ga:{native:"Hemle ni mikwae malaria?",steps:["Sleep under a treated mosquito net every night","Remove standing water near the house","Go to clinic quickly if fever and body pains come","Complete all antimalarial medicine given"],audioKey:"qa_malaria"},
+    ewe:{native:"Aleke nɔ zɔ malaria ŋu?",steps:["Sleep under an insecticide net every night","Remove standing water around your home","Go to clinic quickly if you develop fever","Take all antimalarial tablets until finished"],audioKey:"qa_malaria"},
+    hausa:{native:"Yaya zan kare kaina daga zazzabin cizon sauro?",steps:["Sleep under an insecticide-treated net every night","Remove all standing water near your home","Visit clinic quickly if you get fever and pains","Complete all antimalarial medicine prescribed"],audioKey:"qa_malaria"},
+    english:{native:"How do I prevent malaria?",steps:["Sleep under an insecticide-treated bed net every night","Remove standing water near your home","Go to clinic quickly if you develop fever and pains","Complete the full course of any antimalarial medicine given"],audioKey:"qa_malaria"}
   }
 };
 
 const TOPICS_DATA = {
-  hypertension:{title:"❤️ High Blood Pressure",steps:[{ico:"❤️",text:"<strong>What it is:</strong> Blood pushes too hard against your vessel walls."},{ico:"🧠",text:"<strong>Why it matters:</strong> Silently damages your heart, kidneys, and brain over time."},{ico:"💊",text:"<strong>Treatment:</strong> Take medicine every day — never stop, even when you feel well."},{ico:"🥗",text:"<strong>Lifestyle:</strong> Eat less salt, walk 30 minutes daily, avoid alcohol."},{ico:"⚠️",text:"<strong>Danger signs:</strong> Severe headache, blurred vision, chest pain — go to hospital now."}],speak:"High blood pressure means your blood is pushing too hard inside your vessels. It can damage your heart and brain silently. Take your medicine every single day. Eat less salt, walk daily, and attend your clinic check-ups."},
-  diabetes:{title:"🩸 Diabetes",steps:[{ico:"🩸",text:"<strong>What it is:</strong> Too much sugar in your blood that your body cannot control."},{ico:"⚠️",text:"<strong>Signs:</strong> Frequent thirst, blurred vision, slow-healing wounds, tiredness."},{ico:"💊",text:"<strong>Treatment:</strong> Take medicine as prescribed and check your blood sugar regularly."},{ico:"🥗",text:"<strong>Food:</strong> Reduce rice, bread, sugary drinks. Eat more vegetables, fish, and beans."},{ico:"👣",text:"<strong>Foot care:</strong> Check your feet daily for cuts or sores."}],speak:"Diabetes means too much sugar in your blood. Take your medicine every day. Reduce sugary foods and white bread. Eat more vegetables, fish, and beans. Check your feet every day."},
-  malaria:{title:"🦟 Malaria",steps:[{ico:"🦟",text:"<strong>Cause:</strong> A parasite carried by female Anopheles mosquitoes — bites at night."},{ico:"🌡️",text:"<strong>Symptoms:</strong> Fever, chills, headache, body pains — 10–15 days after a bite."},{ico:"🛏️",text:"<strong>Prevention:</strong> Sleep under a treated net every night. Remove standing water."},{ico:"🏥",text:"<strong>Treatment:</strong> Go to clinic quickly. Complete the full course of antimalarials."}],speak:"Malaria is caused by mosquito bites at night. Sleep under a treated net every night. Remove standing water near your home. If you have fever and body pains, go to the clinic and complete all medicine given."},
-  pregnancy:{title:"🤰 Pregnancy Care",steps:[{ico:"📅",text:"<strong>Clinic visits:</strong> Attend at least 8 times. Early visits catch problems sooner."},{ico:"💊",text:"<strong>Vitamins:</strong> Take iron and folic acid tablets every day."},{ico:"🥗",text:"<strong>Eat well:</strong> Fish, eggs, green vegetables, fruit, clean water. Avoid alcohol."},{ico:"⚠️",text:"<strong>Go immediately if:</strong> Severe headache, blurred vision, swollen feet, bleeding."}],speak:"Attend antenatal clinic at least eight times. Take iron and folic acid every day. Eat well — fish, eggs, vegetables. Go to hospital immediately if you have bad headache, blurred vision, swollen feet, or any bleeding."},
-  childhealth:{title:"👶 Child Health",steps:[{ico:"💉",text:"<strong>Vaccination:</strong> Protect your child at birth, 6, 10, 14 weeks, 9 and 18 months."},{ico:"📏",text:"<strong>Growth:</strong> Weigh your child monthly at the clinic."},{ico:"🍼",text:"<strong>Breastfeed exclusively</strong> for the first 6 months — no water, no other food."},{ico:"🏥",text:"<strong>Seek care urgently</strong> if child has fever, difficulty breathing, or is not feeding."}],speak:"Vaccinate your child on time — at birth, six weeks, ten weeks, fourteen weeks, nine months, and eighteen months. Breastfeed only for the first six months. Go to clinic urgently if your child has fever, is not eating, or has difficulty breathing."},
-  tb:{title:"🫁 Tuberculosis — TB",steps:[{ico:"😷",text:"<strong>Spread:</strong> TB spreads through air when someone with TB coughs near you."},{ico:"🫁",text:"<strong>Symptoms:</strong> Cough over 2 weeks, fever, weight loss, night sweats, blood in sputum."},{ico:"💊",text:"<strong>Treatment:</strong> TB is curable! Take medicine for the full 6 months without stopping."},{ico:"🏠",text:"<strong>At home:</strong> Open windows for fresh air. Cover mouth when coughing."}],speak:"Tuberculosis spreads through the air when someone coughs. If you have had a cough for more than two weeks, fever, or weight loss, go to the clinic. TB is curable but you must take medicine every day for six full months without stopping."},
-  nutrition:{title:"🥗 Healthy Eating",steps:[{ico:"🌽",text:"<strong>Staples:</strong> Rice, yam, plantain, and kenkey — eat in moderate portions."},{ico:"🐟",text:"<strong>Protein:</strong> Fish, eggs, beans, or groundnuts daily."},{ico:"🥬",text:"<strong>Vegetables:</strong> Dark green leaves — kontomire, garden eggs — every day."},{ico:"💧",text:"<strong>Water:</strong> At least 8 cups of clean safe water daily. Avoid sugary drinks."}],speak:"Eat rice, yam, or plantain for energy. Every day eat fish, eggs, beans, or groundnuts for strength. Include dark green vegetables like kontomire every day. Drink at least eight cups of clean water daily."},
-  medication:{title:"💊 Taking Medicines",steps:[{ico:"⏰",text:"<strong>Same time every day:</strong> Take medicine at the same time to keep it working."},{ico:"🚫",text:"<strong>Never skip:</strong> Even when you feel well — skipping breaks the medicine's effect."},{ico:"🤝",text:"<strong>Do not share:</strong> Your medicine is for you only."},{ico:"💬",text:"<strong>Side effects:</strong> If you feel dizzy or unwell — tell your doctor."},{ico:"✅",text:"<strong>Complete the course:</strong> Always finish all medicine given — especially antibiotics."}],speak:"Take your medicine at the same time every day. Never skip a dose even when you feel well. Never share your medicine with anyone else. If you have any side effects, tell your doctor. Always complete the full course of medicine given to you."}
+  hypertension:{title:"❤️ High Blood Pressure",audioKey:"topic_hypertension",steps:[{ico:"❤️",text:"<strong>What it is:</strong> Blood pushes too hard against your vessel walls."},{ico:"🧠",text:"<strong>Why it matters:</strong> Silently damages your heart, kidneys, and brain."},{ico:"💊",text:"<strong>Treatment:</strong> Take medicine every day — never stop."},{ico:"🥗",text:"<strong>Lifestyle:</strong> Eat less salt, walk daily, avoid alcohol."},{ico:"⚠️",text:"<strong>Danger signs:</strong> Severe headache, blurred vision — go to hospital now."}]},
+  diabetes:{title:"🩸 Diabetes",audioKey:"topic_diabetes",steps:[{ico:"🩸",text:"<strong>What it is:</strong> Too much sugar in your blood."},{ico:"⚠️",text:"<strong>Signs:</strong> Frequent thirst, blurred vision, slow-healing wounds."},{ico:"💊",text:"<strong>Treatment:</strong> Take medicine as prescribed."},{ico:"🥗",text:"<strong>Food:</strong> Reduce rice, bread, sugary drinks. Eat more vegetables and fish."},{ico:"👣",text:"<strong>Foot care:</strong> Check your feet daily for cuts or sores."}]},
+  malaria:{title:"🦟 Malaria",audioKey:"topic_malaria",steps:[{ico:"🦟",text:"<strong>Cause:</strong> A parasite carried by mosquitoes — bites at night."},{ico:"🌡️",text:"<strong>Symptoms:</strong> Fever, chills, headache, body pains."},{ico:"🛏️",text:"<strong>Prevention:</strong> Sleep under a treated net every night. Remove standing water."},{ico:"🏥",text:"<strong>Treatment:</strong> Go to clinic quickly. Complete the full course."}]},
+  pregnancy:{title:"🤰 Pregnancy Care",audioKey:"topic_pregnancy",steps:[{ico:"📅",text:"<strong>Clinic visits:</strong> Attend at least 8 times."},{ico:"💊",text:"<strong>Vitamins:</strong> Take iron and folic acid every day."},{ico:"🥗",text:"<strong>Eat well:</strong> Fish, eggs, green vegetables, clean water. Avoid alcohol."},{ico:"⚠️",text:"<strong>Go immediately if:</strong> Severe headache, blurred vision, swollen feet, bleeding."}]},
+  childhealth:{title:"👶 Child Health",audioKey:"topic_childhealth",steps:[{ico:"💉",text:"<strong>Vaccination:</strong> Protect your child at birth, 6, 10, 14 weeks, 9 and 18 months."},{ico:"📏",text:"<strong>Growth:</strong> Weigh your child monthly at the clinic."},{ico:"🍼",text:"<strong>Breastfeed exclusively</strong> for the first 6 months."},{ico:"🏥",text:"<strong>Seek care urgently</strong> if child has fever or difficulty breathing."}]},
+  tb:{title:"🫁 Tuberculosis",audioKey:"topic_tb",steps:[{ico:"😷",text:"<strong>Spread:</strong> TB spreads through air when someone with TB coughs near you."},{ico:"🫁",text:"<strong>Symptoms:</strong> Cough over 2 weeks, fever, weight loss, night sweats."},{ico:"💊",text:"<strong>Treatment:</strong> TB is curable! Take medicine for the full 6 months."},{ico:"🏠",text:"<strong>At home:</strong> Open windows for fresh air. Cover mouth when coughing."}]},
+  nutrition:{title:"🥗 Healthy Eating",audioKey:"topic_nutrition",steps:[{ico:"🌽",text:"<strong>Staples:</strong> Rice, yam, plantain — eat in moderate portions."},{ico:"🐟",text:"<strong>Protein:</strong> Fish, eggs, beans, or groundnuts daily."},{ico:"🥬",text:"<strong>Vegetables:</strong> Kontomire, garden eggs — eat every day."},{ico:"💧",text:"<strong>Water:</strong> At least 8 cups of clean safe water daily."}]},
+  medication:{title:"💊 Taking Medicines",audioKey:"topic_medication",steps:[{ico:"⏰",text:"<strong>Same time every day:</strong> Take medicine at the same time to keep it working."},{ico:"🚫",text:"<strong>Never skip:</strong> Even when you feel well."},{ico:"🤝",text:"<strong>Do not share:</strong> Your medicine is for you only."},{ico:"💬",text:"<strong>Side effects:</strong> Tell your doctor if you feel unwell after taking medicine."},{ico:"✅",text:"<strong>Complete the course:</strong> Always finish all medicine given."}]}
 };
 
 const NURSE_SCRIPTS = [
-  {id:'bp',icon:'❤️',color:'#FFF0F0',title:'Blood Pressure Explained',sub:'~45 sec',twi:'"Ama, wo mogya kwan mu tumi hyɛ paa — saa na wɔfrɛ no hypertension. Ɛhia sɛ wonnom wo nnuro daa — ɛnkasa sɛ wo ho yɛ wo yie."',en:'Your blood vessels are under too much pressure. Take medicine every day, even when feeling fine. Eat less salt.',speak:'Your blood vessels are under too much pressure. This is called hypertension. You must take your medicine every single day, even when you feel completely well. Eat less salt and come to the clinic when we call you.'},
-  {id:'medicine',icon:'💊',color:'#EAF7F0',title:'Medicine Instructions',sub:'~30 sec',twi:'"Nom nnuro yi prenu wɔ da biara — anɔpa bere na anadwo bere. Fa no aduane akyi."',en:'Take these tablets twice a day — morning and night. Take them after food.',speak:'Please take these tablets twice every day — one in the morning after breakfast, and one at night after your evening meal. Taking them after food will help prevent any stomach upset.'},
-  {id:'danger',icon:'⚠️',color:'#FFF3E8',title:'Danger Signs in Pregnancy',sub:'~35 sec',twi:'"Hwɛ signs yi: wʼani nhunu fɛ, wo tirim yɛ wo ya, wo nan hyɛ, anaasɛ mogya ba — kɔ abↄden ntɛm!"',en:'Blurred vision, severe headache, very swollen feet, or heavy bleeding — go to hospital immediately!',speak:'These are the danger signs during pregnancy. If you have very blurred vision, a very severe headache, very swollen feet, or any heavy bleeding — go to the hospital immediately. Do not wait. Go right away.'},
-  {id:'vaccination',icon:'💉',color:'#EAF2FF',title:'Child Vaccination Schedule',sub:'~40 sec',twi:'"Wo ba a ɔbɛwo no benya ntabↄ ama ɔntwa yareɛ wɔ 6 weeks, 10 weeks, na 14 weeks."',en:'Your newborn will receive vaccines to protect against serious illness. Bring them at 6, 10, and 14 weeks after birth.',speak:'Your newborn baby needs vaccinations to protect them from serious diseases. These vaccines are free at the clinic. Please bring your baby back at six weeks, then at ten weeks, and again at fourteen weeks after birth.'},
-  {id:'malaria-prev',icon:'🦟',color:'#F3EAF7',title:'Malaria Prevention',sub:'~30 sec',twi:'"Da wɔ sauro net ase daa. Twa nsuyiri a wɔwɔ wo dan ho. Sɛ ahohyɛ ba a, kɔ abↄden ntɛm."',en:'Sleep under a treated bed net every night. Remove standing water near your home.',speak:'To prevent malaria, sleep under an insecticide-treated bed net every single night. Remove any containers with standing water near your home. If you develop a fever and body pains, go to the clinic quickly.'}
+  {id:'bp',icon:'❤️',color:'#FFF0F0',titleKey:'nurse_script_bp',subKey:'nurse_script_bp_sub',
+   audioKey:'nurse_bp',
+   twi:'"Ama, wo mogya kwan mu tumi hyɛ paa — saa na wɔfrɛ no hypertension. Ɛhia sɛ wonnom wo nnuro daa."',
+   en:'Your blood vessels are under too much pressure. Take medicine every day, even when feeling fine. Eat less salt.'},
+  {id:'medicine',icon:'💊',color:'#EAF7F0',titleKey:'nurse_script_medicine',subKey:'nurse_script_medicine_sub',
+   audioKey:'nurse_medicine',
+   twi:'"Nom nnuro yi prenu wɔ da biara — anɔpa bere na anadwo bere. Fa no aduane akyi."',
+   en:'Take these tablets twice a day — morning and night. Take them after food.'},
+  {id:'danger',icon:'⚠️',color:'#FFF3E8',titleKey:'nurse_script_danger',subKey:'nurse_script_danger_sub',
+   audioKey:'nurse_danger',
+   twi:'"Hwɛ signs yi: wʼani nhunu fɛ, wo tirim yɛ wo ya, wo nan hyɛ, anaasɛ mogya ba — kɔ abↄden ntɛm!"',
+   en:'Danger signs: blurred vision, severe headache, very swollen feet, or heavy bleeding — go to hospital immediately!'},
+  {id:'vaccination',icon:'💉',color:'#EAF2FF',titleKey:'nurse_script_vaccination',subKey:'nurse_script_vaccination_sub',
+   audioKey:'nurse_vaccination',
+   twi:'"Wo ba a ɔbɛwo no benya ntabↄ wɔ 6 weeks, 10 weeks, na 14 weeks."',
+   en:'Bring your baby back at 6 weeks, 10 weeks, and 14 weeks for vaccinations.'},
+  {id:'malaria_prev',icon:'🦟',color:'#F3EAF7',titleKey:'nurse_script_malaria',subKey:'nurse_script_malaria_sub',
+   audioKey:'nurse_malaria_prev',
+   twi:'"Da wɔ sauro net ase daa. Twa nsuyiri a wɔwɔ wo dan ho. Sɛ ahohyɛ ba a, kɔ abↄden ntɛm."',
+   en:'Sleep under a treated bed net every night. Remove standing water near your home. Go to clinic quickly if fever develops.'}
 ];
+</script>
 
-const LANG_PREVIEWS = {
-  twi:'Akwaaba! Mfrɛ me HealthVoice G H. Mede me ho ato wo na meka asɛm a ehia wo no Twi kasa mu.',
-  ga:'Ogboo! HealthVoice G H ni. Mihi nɔ kɛ yɛ nii na mihi lɛ wo ŋsɛm ni shi Ga.',
-  ewe:'Ŋdi na mi! Ne nye HealthVoice G H. Míawɔ nkeke nyuie tso wo si eye míakɔ nu le Ewe gome.',
-  hausa:'Sannu! Ni ne HealthVoice G H. Zan taimaka maka ka fahimci lafiyarka da harshen Hausa.',
-  english:'Welcome! I am HealthVoice GH. I will help you understand your health in plain, simple English.'
-};
-const LANG_LABELS = {twi:'🌿 Twi',ga:'🌊 Ga',ewe:'🌻 Ewe',hausa:'🌙 Hausa',english:'🇬🇭 English'};
-
-// ============================================================
-// STATE
-// ============================================================
+<!-- ════════════════════════════════════════════
+     APP LOGIC
+     ════════════════════════════════════════════ -->
+<script>
+// ─────────────────── STATE ───────────────────
 let S = {
-  currentLang:'twi', currentLangEmoji:'🌿',
-  currentScreen:'onboard', screenHistory:[],
-  voiceState:'idle', currentQuery:null,
-  currentSheetTopic:null,
-  reminders:[], audioTimer:null,
-  recognition:null,
-  patient:{name:'Select Patient',info:'Tap to add patient details',lang:'twi'},
+  currentLang: 'english',
+  currentScreen: 'splash',
+  screenHistory: [],
+  voiceState: 'idle',
+  currentQuery: null,
+  currentSheetTopic: null,
+  reminders: [],
+  audioTimer: null,
+  recognition: null,
+  patient: { name:'', info:'', lang:'twi' },
   participantId: null,
   sessionStart: Date.now(),
   sessionEvents: [],
-  feedback:{ease:0,helpful:0,audio:'',recommend:'',langUsed:'',comments:''}
+  feedback: { ease:0, helpful:0, audio:'', recommend:'', comments:'' }
 };
 
-// ============================================================
-// FIREBASE SYNC
-// ============================================================
-async function fbLog(type, data) {
-  if (!window._fbReady || !window._db) return;
-  try {
-    const { collection, addDoc, serverTimestamp, _fbModules } = window;
-    const mods = window._fbModules;
-    await mods.addDoc(mods.collection(window._db, 'events'), {
-      participantId: S.participantId || 'anonymous',
-      lang: S.currentLang,
-      type,
-      data,
-      timestamp: mods.serverTimestamp(),
-      sessionId: S.sessionStart
-    });
-  } catch(e) { /* silent — data queued locally */ }
-}
-
-async function fbSaveFeedback(feedback) {
-  if (!window._fbReady || !window._db) {
-    // Queue locally for later sync
-    try {
-      const q = JSON.parse(localStorage.getItem('hvgh_feedback_queue') || '[]');
-      q.push({...feedback, queuedAt: Date.now()});
-      localStorage.setItem('hvgh_feedback_queue', JSON.stringify(q));
-    } catch(e){}
-    return;
-  }
-  try {
-    const mods = window._fbModules;
-    await mods.addDoc(mods.collection(window._db, 'feedback'), {
-      ...feedback,
-      timestamp: mods.serverTimestamp()
-    });
-    updateSyncUI(true);
-  } catch(e) { console.warn('Feedback sync failed, queued locally'); }
-}
-
-async function fbSaveSession() {
-  if (!window._fbReady || !window._db || !S.participantId) return;
-  try {
-    const mods = window._fbModules;
-    const duration = Math.round((Date.now() - S.sessionStart) / 1000);
-    await mods.addDoc(mods.collection(window._db, 'sessions'), {
-      participantId: S.participantId,
-      lang: S.currentLang,
-      duration,
-      events: S.sessionEvents,
-      timestamp: mods.serverTimestamp()
-    });
-  } catch(e){}
-}
-
-// Retry queued feedback when Firebase becomes available
-function syncQueue() {
-  if (!window._fbReady) return;
-  try {
-    const q = JSON.parse(localStorage.getItem('hvgh_feedback_queue') || '[]');
-    if (q.length === 0) return;
-    q.forEach(fb => fbSaveFeedback(fb));
-    localStorage.removeItem('hvgh_feedback_queue');
-    showToast('✅ Offline data synced to dashboard');
-  } catch(e){}
-}
-
-function updateSyncUI(online) {
-  const dot = document.getElementById('sync-dot-home');
-  const lbl = document.getElementById('sync-label-home');
-  if (!dot || !lbl) return;
-  dot.className = 'sync-dot ' + (online ? '' : (window._fbReady ? 'offline' : 'error'));
-  lbl.textContent = online ? 'Synced ✓' : (window._fbReady ? 'Offline' : 'Local only');
-}
-
-// ============================================================
-// LOCAL PERSISTENCE
-// ============================================================
+// ─────────────────── PERSISTENCE ───────────────────
 function saveLocal() {
   try {
     localStorage.setItem('hvgh_lang', S.currentLang);
@@ -827,7 +1288,7 @@ function saveLocal() {
 }
 function loadLocal() {
   try {
-    S.currentLang = localStorage.getItem('hvgh_lang') || 'twi';
+    S.currentLang = localStorage.getItem('hvgh_lang') || 'english';
     const r = localStorage.getItem('hvgh_reminders');
     if (r) S.reminders = JSON.parse(r);
     const p = localStorage.getItem('hvgh_patient');
@@ -836,13 +1297,42 @@ function loadLocal() {
   } catch(e){}
 }
 
-// ============================================================
-// NAVIGATION
-// ============================================================
+// ─────────────────── FIREBASE LOG ───────────────────
+async function fbLog(type, data) {
+  if (!window._fbReady || !window._db) return;
+  try {
+    const m = window._fbM;
+    await m.addDoc(m.collection(window._db, 'events'), {
+      participantId: S.participantId || 'anonymous',
+      lang: S.currentLang, type, data,
+      timestamp: m.serverTimestamp(),
+      sessionId: S.sessionStart
+    });
+  } catch(e){}
+}
+async function fbSaveFeedback(entry) {
+  if (!window._fbReady || !window._db) {
+    try {
+      const q = JSON.parse(localStorage.getItem('hvgh_queue') || '[]');
+      q.push({...entry, queuedAt: Date.now()});
+      localStorage.setItem('hvgh_queue', JSON.stringify(q));
+    } catch(e){}
+    return;
+  }
+  try {
+    const m = window._fbM;
+    await m.addDoc(m.collection(window._db, 'feedback'), {
+      ...entry, timestamp: m.serverTimestamp()
+    });
+  } catch(e){}
+}
+
+// ─────────────────── NAVIGATION ───────────────────
 function goTo(name) {
   const cur = document.getElementById('screen-' + S.currentScreen);
   const next = document.getElementById('screen-' + name);
   if (!next || name === S.currentScreen) return;
+  stopAudio();
   cur?.classList.add('prev'); cur?.classList.remove('active');
   next.classList.add('active'); next.classList.remove('prev');
   S.screenHistory.push(S.currentScreen);
@@ -851,216 +1341,214 @@ function goTo(name) {
   setTimeout(() => { if(sb) sb.scrollTop = 0; }, 50);
   if (name === 'reminders') renderReminders();
   if (name === 'nurse') renderNurseScripts();
-  // Track screen visits
-  S.sessionEvents.push({screen:name, t: Date.now()-S.sessionStart});
-  fbLog('screen_view', {screen:name});
+  // Apply translations & play narration
+  applyTranslations();
+  playScreenNarration(name);
+  S.sessionEvents.push({ screen:name, t: Date.now()-S.sessionStart });
+  fbLog('screen_view', { screen:name });
 }
 function goBack() {
   const prev = S.screenHistory.pop();
   if (!prev) return goTo('home');
   const cur = document.getElementById('screen-' + S.currentScreen);
   const prevEl = document.getElementById('screen-' + prev);
+  stopAudio();
   cur?.classList.remove('active');
   prevEl?.classList.remove('prev'); prevEl?.classList.add('active');
   S.currentScreen = prev;
+  applyTranslations();
 }
 
-// ============================================================
-// ONBOARDING
-// ============================================================
-function startOnboard() {
+// ─────────────────── ONBOARDING ───────────────────
+function startApp() {
   const pid = document.getElementById('pid-input').value.trim().toUpperCase();
   if (!pid) { showToast('Please enter your Participant ID'); return; }
   S.participantId = pid;
-  saveLocal();
-  // Show PID pill on home
   const pill = document.getElementById('home-pid-pill');
   if (pill) { pill.textContent = '🪪 ' + pid; pill.style.display = 'inline-flex'; }
-  fbLog('onboard', {participantId: pid});
+  fbLog('onboard', { participantId: pid });
+  saveLocal();
   goTo('language');
 }
 
-// ============================================================
-// LANGUAGE
-// ============================================================
-function selectLang(el, lang, emoji) {
+// ─────────────────── LANGUAGE ───────────────────
+const LANG_LABELS = { twi:'🌿 Twi', ga:'🌊 Ga', ewe:'🌻 Ewe', hausa:'🌙 Hausa', english:'🇬🇭 English' };
+const LANG_NAMES = { twi:'Twi', ga:'Ga', ewe:'Ewe', hausa:'Hausa', english:'English' };
+
+function selectLang(lang, el) {
   document.querySelectorAll('.lang-card').forEach(c => c.classList.remove('sel'));
   el.classList.add('sel');
-  S.currentLang = lang; S.currentLangEmoji = emoji;
+  S.currentLang = lang;
   const btn = document.getElementById('lang-continue-btn');
-  btn.style.opacity='1'; btn.style.pointerEvents='auto'; btn.disabled=false;
-  document.getElementById('home-lang-pill').textContent = LANG_LABELS[lang] || emoji+' '+lang;
-  document.querySelectorAll('.lchip').forEach(c => {
-    const lname = lang.charAt(0).toUpperCase()+lang.slice(1);
-    c.classList.toggle('on', c.textContent.includes(lname));
-  });
-  speak(LANG_PREVIEWS[lang] || LANG_PREVIEWS.twi);
-  fbLog('language_selected', {lang});
+  btn.style.opacity = '1'; btn.style.pointerEvents = 'auto'; btn.disabled = false;
+  document.getElementById('home-lang-pill').textContent = LANG_LABELS[lang];
+  // Apply full UI translation immediately
+  applyTranslations();
+  // Play preview
+  playAudio(lang, 'narr_language');
+  fbLog('language_selected', { lang });
   saveLocal();
 }
-function previewLang(lang) { speak(LANG_PREVIEWS[lang] || LANG_PREVIEWS.twi); }
-
-// ============================================================
-// TTS
-// ============================================================
-function speak(text, onEnd) {
-  if (!window.speechSynthesis) return onEnd?.();
-  window.speechSynthesis.cancel();
-  const u = new SpeechSynthesisUtterance(text);
-  u.lang='en-GB'; u.rate=0.88; u.pitch=1.05; u.volume=1;
-  if (onEnd) u.onend = onEnd;
-  window.speechSynthesis.speak(u);
+function previewLang(lang) {
+  playAudio(lang, 'narr_language');
 }
-function stopSpeak() { window.speechSynthesis?.cancel(); }
 
-// ============================================================
-// VOICE Q&A
-// ============================================================
-let vIdleTimer = null;
+// ─────────────────── VOICE Q&A ───────────────────
+let vTimer = null;
 function toggleVoice() {
   if (S.voiceState === 'idle') startListening();
   else stopListening();
 }
 function startListening() {
   S.voiceState = 'listening';
-  const orb=document.getElementById('voiceOrb'),waves=document.getElementById('waveBars'),status=document.getElementById('orbStatus');
-  orb.classList.add('listening'); orb.classList.remove('speaking'); orb.textContent='👂';
-  waves.classList.add('on'); status.textContent='Listening… / Mete wo so…';
-  hideResp(); stopSpeak();
+  stopAudio();
+  const orb = document.getElementById('voiceOrb');
+  const waves = document.getElementById('waveBars');
+  const status = document.getElementById('orbStatus');
+  orb.classList.add('listening'); orb.textContent = '👂';
+  waves.classList.add('on');
+  status.textContent = t('listening_msg');
+  hideResp();
   if ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window) {
-    const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     S.recognition = new SR();
-    S.recognition.lang='en-GB'; S.recognition.continuous=false; S.recognition.interimResults=false;
-    S.recognition.onresult = (e) => { stopListening(); matchQuery(e.results[0][0].transcript.toLowerCase()); };
+    S.recognition.lang = 'en-GB'; S.recognition.continuous = false; S.recognition.interimResults = false;
+    S.recognition.onresult = e => { stopListening(); matchQuery(e.results[0][0].transcript.toLowerCase()); };
     S.recognition.onerror = () => stopListening();
-    S.recognition.onend = () => { if(S.voiceState==='listening') stopListening(); };
+    S.recognition.onend = () => { if (S.voiceState === 'listening') stopListening(); };
     try { S.recognition.start(); } catch(e) { stopListening(); }
   } else {
-    vIdleTimer = setTimeout(() => stopListening(), 3000);
+    vTimer = setTimeout(() => stopListening(), 3000);
   }
 }
 function stopListening() {
-  if (vIdleTimer) clearTimeout(vIdleTimer);
-  S.voiceState='idle';
-  if (S.recognition) { try { S.recognition.stop(); } catch(e){} S.recognition=null; }
+  if (vTimer) clearTimeout(vTimer);
+  S.voiceState = 'idle';
+  if (S.recognition) { try { S.recognition.stop(); } catch(e){} S.recognition = null; }
   resetOrb();
 }
 function resetOrb() {
-  S.voiceState='idle';
-  const orb=document.getElementById('voiceOrb'),waves=document.getElementById('waveBars'),status=document.getElementById('orbStatus');
-  if(!orb)return;
-  orb.classList.remove('listening','speaking'); orb.textContent='🎤';
+  S.voiceState = 'idle';
+  const orb = document.getElementById('voiceOrb');
+  const waves = document.getElementById('waveBars');
+  const status = document.getElementById('orbStatus');
+  if (!orb) return;
+  orb.classList.remove('listening','speaking'); orb.textContent = '🎤';
   waves?.classList.remove('on');
-  if(status) status.textContent='Tap to Speak / Ka bɔ';
+  if (status) status.textContent = t('tap_to_speak');
 }
-function matchQuery(t) {
+function matchQuery(transcript) {
+  const t = transcript.toLowerCase();
   if (t.includes('medicine')||t.includes('tablet')||t.includes('nnuro')) doQuery('medicine');
-  else if (t.includes('hypertension')||t.includes('high blood')||t.includes('blood pressure')) doQuery('hypertension');
+  else if (t.includes('hypertension')||t.includes('high blood')||t.includes('pressure')) doQuery('hypertension');
   else if (t.includes('antenatal')||t.includes('clinic')||t.includes('pregnant')) doQuery('antenatal');
   else if (t.includes('fever')||t.includes('child')||t.includes('baby')) doQuery('fever');
   else if (t.includes('malaria')) doQuery('malaria');
   else doQuery('medicine');
 }
-function setVoiceLang(el, lang, emoji) {
-  document.querySelectorAll('.lchip').forEach(c => c.classList.remove('on'));
-  el.classList.add('on');
-  S.currentLang = lang; S.currentLangEmoji = emoji;
-  hideResp();
-}
 function doQuery(topic) {
   const lang = S.currentLang;
-  const data = VOICE_DATA[topic]?.[lang] || VOICE_DATA[topic]?.['twi'];
-  S.currentQuery = {topic, data};
-  S.voiceState='listening';
-  const orb=document.getElementById('voiceOrb'),waves=document.getElementById('waveBars'),status=document.getElementById('orbStatus');
-  orb.classList.add('listening'); orb.textContent='👂';
-  waves.classList.add('on'); status.textContent='Processing…';
+  const data = VOICE_DATA[topic]?.[lang] || VOICE_DATA[topic]?.english;
+  S.currentQuery = { topic, data };
+  S.voiceState = 'listening';
+  const orb = document.getElementById('voiceOrb');
+  const waves = document.getElementById('waveBars');
+  const status = document.getElementById('orbStatus');
+  orb.classList.add('listening'); orb.textContent = '👂';
+  waves.classList.add('on'); status.textContent = t('processing_msg');
   hideResp();
-  fbLog('voice_query', {topic, lang});
-  S.sessionEvents.push({type:'query', topic, lang, t:Date.now()-S.sessionStart});
+  fbLog('voice_query', { topic, lang });
   setTimeout(() => {
-    S.voiceState='speaking';
-    orb.classList.remove('listening'); orb.classList.add('speaking'); orb.textContent='🔊';
-    status.textContent='Playing response…';
-    document.getElementById('resp-lang-badge').textContent = data.lang;
+    S.voiceState = 'speaking';
+    orb.classList.remove('listening'); orb.classList.add('speaking'); orb.textContent = '🔊';
+    status.textContent = t('playing_msg');
+    // Build response card
+    document.getElementById('resp-lang-badge').textContent = LANG_LABELS[lang];
     document.getElementById('resp-native').textContent = '"' + data.native + '"';
-    const steps = document.getElementById('resp-steps');
-    steps.innerHTML = '';
-    data.steps.forEach((s,i) => {
-      const li = document.createElement('li'); li.className='resp-step';
-      li.innerHTML=`<div class="rs-num">${i+1}</div><div class="rs-text">${s}</div>`;
-      steps.appendChild(li);
+    const stepsEl = document.getElementById('resp-steps');
+    stepsEl.innerHTML = '';
+    data.steps.forEach((s, i) => {
+      const li = document.createElement('li'); li.className = 'resp-step';
+      li.innerHTML = `<div class="rs-num">${i+1}</div><div class="rs-text">${s}</div>`;
+      stepsEl.appendChild(li);
     });
     document.getElementById('resp-card').classList.add('on');
-    speak(data.steps.join('. '), () => resetOrb());
+    // Play the real audio file for this Q&A
+    playAudio(lang, data.audioKey, () => resetOrb());
     startAudioBar(data.steps.length * 2.5);
-  }, 1600);
+  }, 1500);
 }
 function replayResponse() {
   if (!S.currentQuery) return;
-  speak(S.currentQuery.data.steps.join('. '));
+  playAudio(S.currentLang, S.currentQuery.data.audioKey);
   startAudioBar(S.currentQuery.data.steps.length * 2.5);
 }
 function hideResp() { document.getElementById('resp-card').classList.remove('on'); }
 function startAudioBar(dur) {
   if (S.audioTimer) clearInterval(S.audioTimer);
-  const fill=document.getElementById('ap-fill'),timeEl=document.getElementById('ap-time');
-  if(!fill)return;
-  let elapsed=0; fill.style.width='0%';
+  const fill = document.getElementById('ap-fill');
+  const timeEl = document.getElementById('ap-time');
+  if (!fill) return;
+  let elapsed = 0; fill.style.width = '0%';
   S.audioTimer = setInterval(() => {
-    elapsed+=0.1;
-    fill.style.width=Math.min((elapsed/dur)*100,100)+'%';
-    const rem=Math.max(0,dur-elapsed);
-    timeEl.textContent=`${Math.floor(rem/60)}:${Math.floor(rem%60).toString().padStart(2,'0')}`;
-    if(elapsed>=dur) clearInterval(S.audioTimer);
+    elapsed += 0.1;
+    fill.style.width = Math.min((elapsed/dur)*100, 100) + '%';
+    const rem = Math.max(0, dur-elapsed);
+    timeEl.textContent = `${Math.floor(rem/60)}:${Math.floor(rem%60).toString().padStart(2,'0')}`;
+    if (elapsed >= dur) clearInterval(S.audioTimer);
   }, 100);
 }
 
-// ============================================================
-// TOPICS
-// ============================================================
+// ─────────────────── TOPICS ───────────────────
 function showTopic(id) {
-  const d = TOPICS_DATA[id]; if(!d)return;
-  S.currentSheetTopic = d;
+  const d = TOPICS_DATA[id]; if (!d) return;
+  S.currentSheetTopic = { ...d, id };
   document.getElementById('sheet-title').textContent = d.title;
-  document.getElementById('sheet-content').innerHTML = d.steps.map(s=>`<div class="info-step"><div class="is-ico">${s.ico}</div><div class="is-text">${s.text}</div></div>`).join('');
-  document.getElementById('sheet-lang-name').textContent = {twi:'Twi',ga:'Ga',ewe:'Ewe',hausa:'Hausa',english:'English'}[S.currentLang]||'Twi';
+  document.getElementById('sheet-content').innerHTML = d.steps.map(s =>
+    `<div class="info-step"><div class="is-ico">${s.ico}</div><div class="is-text">${s.text}</div></div>`
+  ).join('');
   document.getElementById('sheet-backdrop').classList.add('on');
   document.getElementById('bottom-sheet').classList.add('on');
-  fbLog('topic_view', {topic:id, lang:S.currentLang});
+  fbLog('topic_view', { topic:id, lang:S.currentLang });
+  // Auto-play topic audio
+  setTimeout(() => playAudio(S.currentLang, d.audioKey), 400);
 }
 function closeSheet() {
   document.getElementById('sheet-backdrop').classList.remove('on');
   document.getElementById('bottom-sheet').classList.remove('on');
-  stopSpeak();
+  stopAudio();
 }
 function speakSheetContent() {
   if (!S.currentSheetTopic) return;
-  speak(S.currentSheetTopic.speak);
-  fbLog('topic_audio', {title:S.currentSheetTopic.title, lang:S.currentLang});
+  playAudio(S.currentLang, S.currentSheetTopic.audioKey);
+  fbLog('topic_audio', { topic:S.currentSheetTopic.id, lang:S.currentLang });
 }
 
-// ============================================================
-// REMINDERS
-// ============================================================
+// ─────────────────── REMINDERS ───────────────────
 function renderReminders() {
-  const list = document.getElementById('reminders-list'); if(!list)return;
+  const list = document.getElementById('reminders-list'); if (!list) return;
   const pc = document.getElementById('notif-perm-card');
-  if(pc) pc.style.display = ('Notification' in window && Notification.permission!=='granted') ? 'flex':'none';
+  if (pc) pc.style.display = ('Notification' in window && Notification.permission !== 'granted') ? 'flex' : 'none';
   if (!S.reminders.length) {
-    list.innerHTML=`<div style="text-align:center;padding:30px;color:var(--muted);"><div style="font-size:48px;margin-bottom:10px;">⏰</div><div style="font-weight:700;">No reminders yet</div><div style="font-size:13px;margin-top:4px;">Add your first medicine reminder below</div></div>`;
+    list.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted);">
+      <div style="font-size:48px;margin-bottom:10px;">⏰</div>
+      <div style="font-weight:700;">${t('no_reminders')}</div>
+      <div style="font-size:13px;margin-top:4px;">${t('no_reminders_sub')}</div>
+    </div>`;
     return;
   }
-  list.innerHTML = S.reminders.map((r,i)=>`
+  const icons = ['💊','💉','🌿','🩺','💙'];
+  const colors = ['#EAF7F0','#EAF2FF','#FBF3E2','#FFF0F0','#F3EAF7'];
+  list.innerHTML = S.reminders.map((r, i) => `
     <div class="rem-item">
-      <div class="ri-ico" style="background:${r.color||'#EAF7F0'};">${r.icon||'💊'}</div>
+      <div class="ri-ico" style="background:${r.color||colors[0]};">${r.icon||'💊'}</div>
       <div style="flex:1;">
         <div class="ri-name">${r.name}</div>
         <div class="ri-time">🕐 ${r.time} daily</div>
         <div class="ri-dose">${r.dose} · ${r.note}</div>
       </div>
       <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-        ${i===0?'<div class="next-dot">NEXT</div>':''}
+        ${i===0?'<div style="background:var(--gold);color:white;border-radius:8px;padding:3px 8px;font-size:10px;font-weight:800;">NEXT</div>':''}
         <div class="toggle ${r.active?'':'off'}" onclick="toggleReminder(${i})"></div>
       </div>
     </div>`).join('');
@@ -1068,203 +1556,217 @@ function renderReminders() {
 function openAddReminder() { document.getElementById('add-reminder-modal').classList.add('on'); }
 function closeAddReminder() {
   document.getElementById('add-reminder-modal').classList.remove('on');
-  ['rem-name','rem-dose','rem-note'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('rem-time').value='07:00';
+  ['rem-name','rem-dose','rem-note'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('rem-time').value = '07:00';
 }
 function saveReminder() {
-  const name=document.getElementById('rem-name').value.trim();
-  const time=document.getElementById('rem-time').value;
-  const dose=document.getElementById('rem-dose').value.trim()||'1 tablet';
-  const note=document.getElementById('rem-note').value.trim()||'As directed';
-  if(!name){showToast('Please enter a medicine name');return;}
-  const icons=['💊','💉','🌿','🩺','💙'],colors=['#EAF7F0','#EAF2FF','#FBF3E2','#FFF0F0','#F3EAF7'];
-  const idx=S.reminders.length%5;
-  const rem={name,time,dose,note,active:true,icon:icons[idx],color:colors[idx],id:Date.now()};
+  const name = document.getElementById('rem-name').value.trim();
+  const time = document.getElementById('rem-time').value;
+  const dose = document.getElementById('rem-dose').value.trim() || '1 tablet';
+  const note = document.getElementById('rem-note').value.trim() || 'As directed';
+  if (!name) { showToast('Please enter a medicine name'); return; }
+  const icons = ['💊','💉','🌿','🩺','💙'];
+  const colors = ['#EAF7F0','#EAF2FF','#FBF3E2','#FFF0F0','#F3EAF7'];
+  const idx = S.reminders.length % 5;
+  const rem = { name, time, dose, note, active:true, icon:icons[idx], color:colors[idx], id:Date.now() };
   S.reminders.push(rem);
   scheduleReminder(rem);
-  fbLog('reminder_created', {name,time,lang:S.currentLang});
+  fbLog('reminder_created', { name, time, lang:S.currentLang });
   saveLocal(); closeAddReminder(); renderReminders();
   showToast('✅ Reminder saved!');
 }
-function toggleReminder(i) { S.reminders[i].active=!S.reminders[i].active; saveLocal(); renderReminders(); }
+function toggleReminder(i) { S.reminders[i].active = !S.reminders[i].active; saveLocal(); renderReminders(); }
 function scheduleReminder(rem) {
-  if(!('Notification' in window)||Notification.permission!=='granted')return;
-  const [h,m]=rem.time.split(':').map(Number);
-  const now=new Date(), fire=new Date();
-  fire.setHours(h,m,0,0);
-  if(fire<=now) fire.setDate(fire.getDate()+1);
-  setTimeout(()=>{ fireReminder(rem); setInterval(()=>fireReminder(rem),86400000); }, fire-now);
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const [h, m] = rem.time.split(':').map(Number);
+  const now = new Date(), fire = new Date();
+  fire.setHours(h, m, 0, 0);
+  if (fire <= now) fire.setDate(fire.getDate() + 1);
+  setTimeout(() => {
+    fireReminder(rem);
+    setInterval(() => fireReminder(rem), 86400000);
+  }, fire - now);
 }
 function fireReminder(rem) {
-  if(!rem.active)return;
-  fbLog('reminder_fired',{name:rem.name});
-  if('Notification' in window&&Notification.permission==='granted') {
-    new Notification('💊 HealthVoice GH',{body:`Time to take your ${rem.name}. ${rem.dose} — ${rem.note}.`,tag:'hvgh-'+rem.id});
+  if (!rem.active) return;
+  fbLog('reminder_fired', { name:rem.name });
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('💊 HealthVoice GH', {
+      body: `${t('reminder_spoken').replace('{name}',rem.name).replace('{dose}',rem.dose)}`,
+      tag: 'hvgh-' + rem.id
+    });
   }
-  const msgs={twi:`Bere no aba. Nom wo ${rem.name}. ${rem.dose}.`,ga:`Gbɛkɛ ni aba. Mi ${rem.name} ni.`,ewe:`Ŋkeke la ɖe. Xɔ wo ${rem.name}.`,hausa:`Lokacin ya yi. Ka ɗauki ${rem.name}.`,english:`It is time to take your ${rem.name}. ${rem.dose}.`};
-  speak(msgs[S.currentLang]||msgs.english);
+  // Play audio reminder
+  playAudio(S.currentLang, `reminder_${rem.id}`, () => {
+    // fallback TTS reminder
+    const msg = t('reminder_spoken').replace('{name}', rem.name).replace('{dose}', rem.dose);
+    if (audioFallbackSynth) {
+      const u = new SpeechSynthesisUtterance(msg);
+      u.lang = 'en-GB'; u.rate = 0.85;
+      audioFallbackSynth.speak(u);
+    }
+  });
 }
 function testReminderNow() {
-  const name=S.reminders[0]?.name||'your medicine';
-  speak(`This is a test reminder. It is time to take ${name}. One tablet after food.`);
+  const name = S.reminders[0]?.name || 'your medicine';
+  const msg = t('reminder_spoken').replace('{name}', name).replace('{dose}', '1 tablet');
+  if (window.speechSynthesis) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(msg);
+    u.lang = 'en-GB'; u.rate = 0.85;
+    window.speechSynthesis.speak(u);
+  }
   showToast('🔊 Test reminder playing');
 }
 async function requestNotifPermission() {
-  if(!('Notification' in window)){showToast('Notifications not supported on this browser');return;}
-  const p=await Notification.requestPermission();
-  if(p==='granted'){
+  if (!('Notification' in window)) { showToast('Notifications not supported'); return; }
+  const p = await Notification.requestPermission();
+  if (p === 'granted') {
     showToast('✅ Notifications enabled!');
-    document.getElementById('notif-perm-card').style.display='none';
-    S.reminders.filter(r=>r.active).forEach(r=>scheduleReminder(r));
+    document.getElementById('notif-perm-card').style.display = 'none';
+    S.reminders.filter(r => r.active).forEach(r => scheduleReminder(r));
   } else showToast('Please allow notifications in browser settings');
 }
 
-// ============================================================
-// NURSE MODE
-// ============================================================
+// ─────────────────── NURSE MODE ───────────────────
 function renderNurseScripts() {
-  const list=document.getElementById('scripts-list'); if(!list)return;
-  list.innerHTML = NURSE_SCRIPTS.map(s=>`
+  const list = document.getElementById('scripts-list'); if (!list) return;
+  list.innerHTML = NURSE_SCRIPTS.map(s => `
     <div class="script-card">
       <div class="sc-hdr" onclick="toggleScript(this)">
         <div class="sc-ico" style="background:${s.color};">${s.icon}</div>
-        <div><div class="sc-title">${s.title}</div><div class="sc-sub">${s.sub}</div></div>
-        <button class="sc-play-btn" onclick="event.stopPropagation();playScript('${s.id}')">▶ Play</button>
+        <div style="flex:1;">
+          <div style="font-family:var(--font-h);font-size:15px;font-weight:700;">${s.id === 'bp' ? 'Blood Pressure' : s.id === 'medicine' ? 'Medicine Instructions' : s.id === 'danger' ? 'Danger Signs' : s.id === 'vaccination' ? 'Vaccination' : 'Malaria Prevention'}</div>
+          <div style="font-size:11px;color:var(--muted);font-weight:600;margin-top:2px;">Tap to expand · Audio available</div>
+        </div>
+        <button class="sc-play-btn" onclick="event.stopPropagation();playScript('${s.id}')">▶ ${t('play_btn')}</button>
       </div>
       <div class="sc-body" id="scb-${s.id}">
+        <div class="translate-badge">⚠️ Translation needed for ${LANG_NAMES[S.currentLang]}</div>
         <div class="script-text">
-          <strong>${LANG_LABELS[S.currentLang]||'🌿 Twi'}:</strong><br>${s.twi}<br><br>
-          <strong>🇬🇧 English:</strong><br>${s.en}
+          <strong>🌿 Twi:</strong><br>${s.twi}<br><br>
+          <strong>🇬🇧 English:</strong><br>${s.en}<br><br>
+          <em style="color:var(--muted);font-size:12px;">📁 Audio file: ${S.currentLang}_${s.audioKey}.mp3</em>
         </div>
-        <div class="sc-actions">
-          <button class="sc-act" onclick="playScript('${s.id}')">🔊 Replay</button>
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button style="flex:1;background:var(--pale);border:1.5px solid var(--border);border-radius:10px;padding:8px;font-size:12px;font-weight:700;cursor:pointer;" onclick="playScript('${s.id}')">🔊 ${t('play_btn')}</button>
         </div>
       </div>
     </div>`).join('');
-  document.getElementById('nurse-patient-name').textContent=S.patient.name;
-  document.getElementById('nurse-patient-info').textContent=S.patient.info;
-  const tags=document.getElementById('nurse-patient-tags');
-  if(tags) tags.innerHTML=`<div class="pt-tag">${LANG_LABELS[S.patient.lang]||'🌿 Twi'}</div>`;
+  document.getElementById('nurse-pt-name').textContent = S.patient.name || t('select_patient');
+  document.getElementById('nurse-pt-info').textContent = S.patient.info || t('tap_to_add');
+  const tags = document.getElementById('nurse-pt-tags');
+  if (tags && S.patient.lang) tags.innerHTML = `<span class="pt-tag">${LANG_LABELS[S.patient.lang]||'🌿 Twi'}</span>`;
 }
 function toggleScript(hdr) {
-  const body=hdr.nextElementSibling;
-  const isOpen=body.classList.contains('on');
-  document.querySelectorAll('.sc-body').forEach(b=>b.classList.remove('on'));
-  if(!isOpen) body.classList.add('on');
+  const body = hdr.nextElementSibling;
+  const isOpen = body.classList.contains('on');
+  document.querySelectorAll('.sc-body').forEach(b => b.classList.remove('on'));
+  if (!isOpen) body.classList.add('on');
 }
 function playScript(id) {
-  const s=NURSE_SCRIPTS.find(x=>x.id===id); if(!s)return;
-  speak(s.speak);
-  fbLog('nurse_script', {scriptId:id, title:s.title});
+  const s = NURSE_SCRIPTS.find(x => x.id === id); if (!s) return;
+  playAudio(S.currentLang, s.audioKey);
+  fbLog('nurse_script', { scriptId:id, lang:S.currentLang });
   showToast('🔊 Playing for patient…');
 }
 function openPatientModal() {
-  document.getElementById('pt-name-input').value=S.patient.name!=='Select Patient'?S.patient.name:'';
-  document.getElementById('pt-info-input').value=S.patient.info!=='Tap to add patient details'?S.patient.info:'';
-  document.getElementById('pt-lang-input').value=S.patient.lang;
+  document.getElementById('pt-name-input').value = S.patient.name || '';
+  document.getElementById('pt-info-input').value = S.patient.info || '';
+  document.getElementById('pt-lang-input').value = S.patient.lang || 'twi';
   document.getElementById('patient-modal').classList.add('on');
 }
-function closePatientModal(){document.getElementById('patient-modal').classList.remove('on');}
-function savePatient(){
-  S.patient.name=document.getElementById('pt-name-input').value.trim()||'Patient';
-  S.patient.info=document.getElementById('pt-info-input').value.trim()||'';
-  S.patient.lang=document.getElementById('pt-lang-input').value;
-  closePatientModal(); renderNurseScripts(); saveLocal(); showToast('✅ Patient saved');
+function closePatientModal() { document.getElementById('patient-modal').classList.remove('on'); }
+function savePatient() {
+  S.patient.name = document.getElementById('pt-name-input').value.trim() || 'Patient';
+  S.patient.info = document.getElementById('pt-info-input').value.trim() || '';
+  S.patient.lang = document.getElementById('pt-lang-input').value;
+  closePatientModal(); renderNurseScripts(); saveLocal();
+  showToast('✅ ' + t('save_btn'));
 }
 
-// ============================================================
-// FEEDBACK
-// ============================================================
+// ─────────────────── FEEDBACK ───────────────────
 function rateStar(cat, val) {
-  S.feedback[cat]=val;
-  document.getElementById('stars-'+cat).querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('on',i<val));
+  S.feedback[cat] = val;
+  document.getElementById('stars-'+cat).querySelectorAll('.star').forEach((s,i) => s.classList.toggle('on', i < val));
 }
 function pickLikert(cat, val, el) {
-  S.feedback[cat]=val;
-  document.getElementById('q-'+cat).querySelectorAll('.likert-opt').forEach(o=>o.classList.remove('on'));
+  S.feedback[cat] = val;
+  document.getElementById('q-'+cat).querySelectorAll('.likert-opt').forEach(o => o.classList.remove('on'));
   el.classList.add('on');
 }
 async function submitFeedback() {
-  S.feedback.comments=document.getElementById('feedback-comments').value;
-  if(!S.feedback.ease&&!S.feedback.helpful){showToast('Please rate at least one question');return;}
-  const entry={
-    participantId: S.participantId||'anonymous',
+  S.feedback.comments = document.getElementById('feedback-comments').value;
+  if (!S.feedback.ease && !S.feedback.helpful) { showToast('Please rate at least one question'); return; }
+  const entry = {
+    participantId: S.participantId || 'anonymous',
     lang: S.currentLang,
     easeRating: S.feedback.ease,
     helpfulRating: S.feedback.helpful,
     audioClear: S.feedback.audio,
     recommend: S.feedback.recommend,
-    langUsed: S.feedback.langUsed||S.currentLang,
     comments: S.feedback.comments,
     sessionDurationSec: Math.round((Date.now()-S.sessionStart)/1000),
-    topicsViewed: [...new Set(S.sessionEvents.filter(e=>e.type==='query').map(e=>e.topic))]
+    topicsViewed: [...new Set(S.sessionEvents.filter(e=>e.screen).map(e=>e.screen))]
   };
-  // Save locally always
   try {
-    const existing=JSON.parse(localStorage.getItem('hvgh_feedbacks')||'[]');
-    existing.push({...entry, savedAt:new Date().toISOString()});
-    localStorage.setItem('hvgh_feedbacks',JSON.stringify(existing));
+    const ex = JSON.parse(localStorage.getItem('hvgh_feedbacks') || '[]');
+    ex.push({ ...entry, savedAt: new Date().toISOString() });
+    localStorage.setItem('hvgh_feedbacks', JSON.stringify(ex));
   } catch(e){}
-  // Sync to Firebase
   await fbSaveFeedback(entry);
-  await fbSaveSession();
-  showToast('✅ Feedback recorded & synced!');
-  setTimeout(()=>goTo('home'),1200);
+  showToast('✅ Feedback recorded!');
+  setTimeout(() => goTo('home'), 1200);
 }
 
-// ============================================================
-// TOAST
-// ============================================================
-let toastTimer=null;
+// ─────────────────── TOAST ───────────────────
+let toastTimer = null;
 function showToast(msg) {
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.classList.add('on');
-  if(toastTimer)clearTimeout(toastTimer);
-  toastTimer=setTimeout(()=>el.classList.remove('on'),2800);
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('on');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('on'), 2800);
 }
 
-// ============================================================
-// KENTE
-// ============================================================
-function buildKente(){
-  const k=document.getElementById('obKente'); if(!k)return;
-  for(let i=0;i<12;i++){const d=document.createElement('div');d.className='kw';k.appendChild(d);}
+// ─────────────────── KENTE ───────────────────
+function buildKente() {
+  const k = document.getElementById('kente'); if (!k) return;
+  for (let i = 0; i < 12; i++) { const d = document.createElement('div'); d.className = 'kw'; k.appendChild(d); }
 }
 
-// ============================================================
-// INIT
-// ============================================================
-document.addEventListener('DOMContentLoaded',()=>{
-  buildKente(); loadLocal();
-  // If returning user with PID, skip onboard
-  if(S.participantId){
-    const lc=document.getElementById('lc-'+S.currentLang);
-    if(lc){lc.classList.add('sel');const btn=document.getElementById('lang-continue-btn');if(btn){btn.style.opacity='1';btn.style.pointerEvents='auto';btn.disabled=false;}}
-    document.getElementById('home-lang-pill').textContent=LANG_LABELS[S.currentLang]||'🌿 Twi';
-    document.querySelectorAll('.lchip').forEach(c=>{const l=S.currentLang;c.classList.toggle('on',c.textContent.toLowerCase().includes(l));});
-    const pill=document.getElementById('home-pid-pill');if(pill){pill.textContent='🪪 '+S.participantId;pill.style.display='inline-flex';}
-    setTimeout(()=>{
-      document.getElementById('screen-onboard').classList.remove('active');
+// ─────────────────── INIT ───────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  buildKente();
+  loadLocal();
+  if (S.participantId) {
+    // Returning user — skip splash
+    const lc = document.getElementById('lc-' + S.currentLang);
+    if (lc) {
+      lc.classList.add('sel');
+      const btn = document.getElementById('lang-continue-btn');
+      if (btn) { btn.style.opacity='1'; btn.style.pointerEvents='auto'; btn.disabled=false; }
+    }
+    document.getElementById('home-lang-pill').textContent = LANG_LABELS[S.currentLang] || '🌿 Twi';
+    const pill = document.getElementById('home-pid-pill');
+    if (pill) { pill.textContent = '🪪 ' + S.participantId; pill.style.display = 'inline-flex'; }
+    setTimeout(() => {
+      document.getElementById('screen-splash').classList.remove('active');
       document.getElementById('screen-home').classList.add('active');
-      S.currentScreen='home'; S.screenHistory=[];
-      updateSyncUI(window._fbReady);
-    },400);
+      S.currentScreen = 'home'; S.screenHistory = [];
+      applyTranslations();
+      playScreenNarration('home');
+    }, 400);
   }
-  // Schedule reminders
-  if('Notification' in window&&Notification.permission==='granted'){
-    S.reminders.filter(r=>r.active).forEach(r=>scheduleReminder(r));
+  if ('Notification' in window && Notification.permission === 'granted') {
+    S.reminders.filter(r => r.active).forEach(r => scheduleReminder(r));
   }
-  // Sync queue when Firebase becomes ready
-  setTimeout(syncQueue, 3000);
-  // Check notif permission
-  if('Notification' in window&&Notification.permission==='default'){
-    const el=document.getElementById('notif-perm-card');if(el)el.style.display='flex';
-  }
+  const pc = document.getElementById('notif-perm-card');
+  if (pc && 'Notification' in window && Notification.permission === 'default') pc.style.display = 'flex';
 });
 
 // Service Worker
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
 }
 </script>
 </body>
